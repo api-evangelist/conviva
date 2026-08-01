@@ -1,0 +1,105 @@
+generated: '2026-08-01'
+method: searched
+source: live probes of /.well-known/* on every Conviva host in apis.yml
+description: >-
+  Conviva publishes no security.txt, no OpenID Connect discovery and no api-catalog on its
+  marketing, docs or REST API hosts. Its entire /.well-known/ surface lives on the two hosted
+  MCP servers, which implement RFC 8414 (OAuth 2.0 Authorization Server Metadata) and
+  RFC 9728 (OAuth 2.0 Protected Resource Metadata) with dynamic client registration.
+
+hosts:
+- host: https://mcp.conviva.com
+  role: MCP server (VSI/DPI metrics, AI alerts, sessions)
+  documents:
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: conviva-mcp-oauth-authorization-server.json
+    spec: RFC 8414
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    file: conviva-mcp-oauth-protected-resource.json
+    spec: RFC 9728
+  - path: /.well-known/jwks.json
+    status: 200
+    spec: RFC 7517
+    file: null
+    note: JWKS fetched and verified as a live RSA key set; not archived (keys rotate).
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/security.txt
+    status: 404
+- host: https://dpi-mcp.conviva.com
+  role: MCP server (Context Center, Nexa, metric query, session replay, insights)
+  documents:
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    file: conviva-dpi-mcp-oauth-authorization-server.json
+    spec: RFC 8414
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    file: conviva-dpi-mcp-oauth-protected-resource.json
+    spec: RFC 9728
+  - path: /.well-known/jwks.json
+    status: 200
+    spec: RFC 7517
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 405
+    note: Method Not Allowed — not an agent card; POST-only MCP route catch-all.
+  - path: /.well-known/agent.json
+    status: 405
+- host: https://api.conviva.com
+  role: REST API host
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+- host: https://www.conviva.com
+  role: marketing site
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+- host: https://docs.conviva.ai
+  role: documentation
+  documents:
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /llms.txt
+    status: 404
+
+# Non-.well-known discovery endpoints that DO return machine-readable descriptors.
+service_descriptors:
+- url: https://mcp.conviva.com/mcp
+  method: GET
+  status: 200
+  returns: server name/version + services[] + OAuth authentication block
+  services: ["/vsi/metrics", "/vsi/ai-alerts", "/vsi/sessions", "/dpi/metrics", "/dpi/ai-alerts"]
+- url: https://dpi-mcp.conviva.com/mcp
+  method: GET
+  status: 200
+  returns: server name/version + services[] + OAuth authentication block
+  services: ["/insights", "/nexa", "/context-center", "/session-replay", "/metric-query"]
+- url: https://mcp.conviva.com/health
+  method: GET
+  status: 200
+  returns: status, version 1.0.0, environment production, transport http, services[], database
+- url: https://dpi-mcp.conviva.com/health
+  method: GET
+  status: 200
+  returns: status, version 1.1.0, environment production, transport http, services[], database
+- url: https://status.conviva.com/api/v2/status.json
+  method: GET
+  status: 200
+  returns: Atlassian Statuspage status summary (page id v9b7qjpl6dw0)
+
+x-evidence:
+  fetched: '2026-08-01'

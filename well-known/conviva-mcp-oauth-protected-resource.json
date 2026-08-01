@@ -1,0 +1,1 @@
+{"resource":"https://mcp.conviva.com","authorization_servers":["https://mcp.conviva.com"],"scopes_supported":["openid","profile","email","conviva"],"resource_name":"mcp-server-conviva","resource_documentation":"https://mcp.conviva.com/health"}

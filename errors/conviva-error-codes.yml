@@ -1,0 +1,107 @@
+generated: '2026-08-01'
+method: searched
+source: Conviva API guide pages (per-API "Response Codes" / "Error Codes" tables)
+sources:
+- https://docs.conviva.ai/api/apis/conviva-vsi-api/precision-policy-api/
+- https://docs.conviva.ai/api/apis/conviva-vsi-api/bulk-filter-api/
+- https://docs.conviva.ai/api/apis/conviva-vsi-api/ai-alerts-api-guide/
+- https://docs.conviva.ai/api/apis/conviva-vsi-api/metrics-v3-api-guide/
+- https://docs.conviva.ai/api/apis/conviva-vsi-api/pii-opt-out-api/
+- https://docs.conviva.ai/api/apis/conviva-vsi-api/validation-timeline-api-v2/
+format: http-status
+rfc9457: false
+envelope:
+  media_type: application/json
+  problem_json: false
+  note: >-
+    Conviva does not use RFC 9457 application/problem+json. There is no single documented error
+    envelope across the APIs — the gateway returns {"message":"Unauthorized"} on 401, and per-API
+    guides document plain status + description tables. The Validation Timeline API returns
+    human-readable strings such as "Error: No record found for viewerId: … and sessionId: …".
+  observed_401_body: '{"message":"Unauthorized"}'
+  observed_401_source: live GET https://api.conviva.com/insights/3.0/metrics (2026-08-01)
+
+problems:
+- status: 200
+  title: OK
+  description: Successfully retrieved data.
+  apis: [ai-alerts, metrics-v3, sessions-v3]
+- status: 201
+  title: Created
+  description: POST returns confirmation of filter creation.
+  apis: [bulk-filters]
+- status: 400
+  title: Bad Request
+  description: Invalid parameter(s) in request; error in query parameters. Bulk Filters also returns
+    400 for an incorrect number of filter IDs.
+  remediation: Correct the query parameters or the filter ID list and retry.
+  apis: [bulk-filters, ai-alerts, precision-policy, pii-opt-out, validation-timeline-v2]
+- status: 401
+  title: Unauthorized
+  description: Invalid HTTP Authorization. Commonly caused by using Pulse user-based credentials
+    instead of a Conviva API key pair.
+  remediation: Check the credentials; generate a client-Id/client-secret from Pulse API Management
+    and send them as HTTP Basic.
+  apis: [bulk-filters, precision-policy, validation-timeline-v2, all]
+- status: 403
+  title: Forbidden
+  description: The Precision APIs are not activated for the c3 account, the caller lacks edit
+    permissions, or the API credentials were not created by a Precision Admin.
+  remediation: Ensure the Precision APIs are activated for the c3 account and have edit permissions;
+    have a Precision Admin create the credentials.
+  apis: [precision-policy]
+- status: 404
+  title: Not Found
+  description: An alert_id event is not found; or the requested resource does not exist.
+  apis: [ai-alerts, validation-timeline-v2]
+- status: 413
+  title: Request Entity Too Large
+  description: The Metrics V3 response body would exceed the 5,700,000-byte payload limit.
+  remediation: Narrow the filters/group-by or shorten the time range.
+  apis: [metrics-v3]
+- status: 417
+  title: Expectation Failed
+  description: Exception Failed — returned for a query with only a NULL session_id.
+  remediation: Provide viewer_id and/or session_id in the request URL.
+  apis: [validation-timeline-v2]
+- status: 422
+  title: Unprocessable Entity
+  description: Error in query parameters (documented alongside 400 as "400 / 422").
+  apis: [ai-alerts]
+- status: 429
+  title: Too Many Requests
+  description: The concurrent-request rate limit for the c3 account was exceeded.
+  remediation: Ensure that the interval between the API calls is more than one minute.
+  apis: [precision-policy]
+- status: 500
+  title: Internal Server Error
+  description: Internal server error.
+  remediation: Try again later. For PII Opt-Out, wait several minutes and retry the request.
+  apis: [precision-policy, pii-opt-out, validation-timeline-v2]
+- status: 503
+  title: Service Unavailable
+  description: >-
+    Returned by Validation Timeline v2 for an invalid viewer_id or session_id, with a
+    message such as "Error: No record found for viewerId: 12345678 and sessionId: 123. Please try
+    again later."
+  remediation: Verify the viewer_id/session_id; if the issue continues, contact Conviva.
+  apis: [validation-timeline-v2]
+
+class_conventions:
+  '4xx': "Client-side error codes start with the number 4, for example, 400 (Bad Request),
+    401 (Unauthorized), 404 (Not Found)."
+  '5xx': "Server-side error codes start with the number 5, for example, 500 (Internal Server Error)."
+  pii_opt_out: "If an error occurs while processing an opt-out request, the request is returned with
+    a 400 or 500 series HTTP status code. In most cases, wait several minutes and retry the request."
+
+gaps:
+- No machine-readable error catalog and no OpenAPI responses to derive from.
+- No stable application-level error codes or `type` URIs — only HTTP status plus prose.
+- No documented request-id / correlation-id header for support escalation.
+- 503 is used for a not-found condition on Validation Timeline v2 rather than 404, which is a
+  semantic deviation worth flagging to the provider.
+
+support: support@conviva.com
+
+x-evidence:
+  fetched: '2026-08-01'

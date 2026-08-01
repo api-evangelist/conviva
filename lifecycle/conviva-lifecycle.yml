@@ -1,0 +1,118 @@
+generated: '2026-08-01'
+method: searched
+source: https://docs.conviva.ai/api/whats-new-conviva-apis/
+sources:
+- https://docs.conviva.ai/api/whats-new-conviva-apis/
+- https://docs.conviva.ai/connect-data/apis/
+- https://status.conviva.com/
+
+versioning:
+  scheme: uri-path
+  per_product: true
+  current:
+  - api: Metrics
+    version: v3
+    path: /insights/3.0/metrics
+  - api: Real-Time Metrics
+    version: v3
+    path: /insights/3.0/real-time-metrics
+  - api: Sessions
+    version: v3
+    path: /insights/3.0/sessions
+  - api: AI Alerts
+    version: '2.6'
+    path: /insights/2.6/ai-alerts
+  - api: Precision Policy
+    version: v1.0
+    path: /precision/v1.0/policies
+  - api: Validation Timeline
+    version: v2
+    path: /validation/v2/timeline
+  - api: PII Opt-Out
+    version: unversioned
+    path: /pii-opt-out
+  - api: Bulk Filters
+    version: unversioned
+    path: /bulk_filters
+  docs: https://docs.conviva.ai/connect-data/apis/
+
+deprecation:
+  policy_url: https://docs.conviva.ai/api/whats-new-conviva-apis/
+  formal_policy: false
+  sunset_header: false
+  deprecation_header: false
+  notice_period: not published
+  note: >-
+    Conviva announces deprecations as dated entries in the API what's-new page. There is no
+    formal deprecation policy document, no committed notice window, and no RFC 8594
+    Sunset/Deprecation response headers — a client cannot detect deprecation programmatically.
+  deprecated:
+  - api: Metrics V2 API
+    announced: '2024-03-31'
+    replacement: Metrics V3 API
+    sunset_date: null
+  - api: Sessions V2 API
+    announced: '2024-03-31'
+    replacement: Sessions V3 API
+    sunset_date: null
+  - api: Viewers Module API
+    announced: '2024-03-31'
+    replacement: Sessions V3 API
+    sunset_date: null
+  not_in_migration:
+  - AI Alerts API
+  - Precision Policy API
+  - PII Opt-Out API
+  related:
+  - name: Deprecating Non-Dimension Custom Tags
+    url: null
+    scope: platform (session tags), not an API version
+    note: Listed in the VSI docs navigation under Filters; no stable public URL captured.
+
+breaking_change_history:
+- date: '2024-03-27'
+  apis: [Metrics V3, Sessions V3]
+  change: >-
+    "The default time range will no more be effective for retrieving the historical metrics and
+    session data." Callers that relied on an implicit default window must now pass an explicit
+    time range.
+  breaking: true
+
+status_page:
+  url: https://status.conviva.com/
+  provider: Atlassian Statuspage
+  page_id: v9b7qjpl6dw0
+  api:
+    status: https://status.conviva.com/api/v2/status.json
+    summary: https://status.conviva.com/api/v2/summary.json
+  feeds:
+    rss: https://status.conviva.com/history.rss
+  components_observed: [DPI]
+  subscribe: true
+
+sla:
+  url: null
+  uptime_target: null
+  note: No public SLA or uptime commitment is published; availability terms sit in the customer
+    agreement rather than on a public page.
+
+data_retention:
+  docs: https://docs.conviva.ai/common/a-common/retention-policy-2720465/
+  note: Conviva publishes a Data Access & Retention Policy page covering how long telemetry is kept.
+
+support:
+  email: support@conviva.com
+  developer_center: https://docs.conviva.ai/conviva-overview/developer-tools/
+
+deprecated_operations: []
+
+gaps:
+- No RFC 8594 Sunset/Deprecation headers.
+- No published sunset dates for the V2 APIs deprecated in March 2024 — deprecated for over two
+  years with no announced end-of-life.
+- No public SLA/uptime target.
+- No machine-readable version discovery endpoint.
+
+x-evidence:
+  fetched: '2026-08-01'
+  status_page_http_status: 200

@@ -1,0 +1,159 @@
+generated: '2026-08-01'
+method: derived
+source: >-
+  Derived by aligning Conviva's published MCP surface (mcp/conviva-mcp.yml, tool names taken verbatim
+  from Conviva's own Agent Skills in skills/) with the documented REST surface at api.conviva.com
+  (docs.conviva.ai API guides).
+purpose: >-
+  Bind each agent-facing MCP capability to the REST capability that backs it, and record where the
+  two surfaces DIVERGE. Conviva is an unusually clean example of MCP and REST being different
+  projections of one data core rather than one wrapping the other: the REST surface is VSI/Insights
+  shaped (metrics, sessions, alerts, filters, policy, privacy), while the DPI MCP surface is Context
+  Center shaped (semantic knowledge search, asset hydration, predefined-metric execution, Nexa
+  analysis, behavior segments). Neither is a superset.
+
+important_caveat: >-
+  Conviva publishes NO OpenAPI, so there are no operationIds to bind to. Every `rest:` row below
+  therefore names a documented REST PATH, not an operationId, and `binding: rest-path` marks that
+  distinction. Nothing here is invented: every path appears in a Conviva API guide and every tool
+  name appears in a Conviva-published Agent Skill. Because tools/list is auth-gated on both servers,
+  no tool inputSchema is asserted anywhere.
+
+surfaces:
+  rest_openapi: null                                  # no OpenAPI published (Conviva says specs are "being wired up")
+  rest_docs: https://docs.conviva.ai/connect-data/apis/
+  rest_base: https://api.conviva.com
+  graphql: null                                       # no GraphQL surface found
+  mcp:
+  - url: https://mcp.conviva.com/mcp
+    version: 1.0.0
+    tools_list: gated (401)
+    services: ["/vsi/metrics", "/vsi/ai-alerts", "/vsi/sessions", "/dpi/metrics", "/dpi/ai-alerts"]
+    tool_names_published: false
+  - url: https://dpi-mcp.conviva.com/mcp
+    version: 1.1.0
+    tools_list: gated (401)
+    services: ["/insights", "/nexa", "/context-center", "/session-replay", "/metric-query"]
+    tool_names_published: true
+    tool_name_source: https://github.com/Conviva/mcp-marketplace (Agent Skills)
+
+crosswalk:
+- tool: metric-query-run
+  server: dpi-mcp
+  category: metrics
+  rest: ["/insights/3.0/metrics/{metric}", "/insights/3.0/metrics/custom-selection", "/insights/3.0/metrics/{metric}/group-by/{dimension}"]
+  binding: rest-path
+  confidence: medium
+  note: >-
+    Both run a metric over a time window with an optional dimensional breakdown, but the identifiers
+    differ fundamentally. REST addresses a Conviva-DEFINED metric by NAME in the path and breaks down
+    by a named dimension; the MCP tool addresses a CUSTOMER-DEFINED Context Center metric by opaque
+    m_* id and breaks down by dimension_* ids. They are analogous capabilities over different
+    catalogs, not the same operation.
+- tool: context-center-asset-list
+  server: dpi-mcp
+  category: metadata
+  rest: ["/3.0/metrics/_meta/references/filters"]
+  binding: rest-path
+  confidence: low
+  note: >-
+    Both enumerate reference metadata, but REST exposes only filter references under _meta while the
+    MCP tool pages through the full Context Center asset catalog (pattern, metric, dimension,
+    segment, template, insights-finder). Weak, partial overlap only.
+- tool: insights-behavior-segment-list
+  server: dpi-mcp
+  category: insights
+  rest: []
+  binding: none
+  confidence: high
+  note: Listed here for completeness; no REST equivalent — see mcp_only[].
+
+mcp_only:
+- tool: context-center-nexa-semantic-search
+  reason: >-
+    Vector/ANN semantic search over an LLM-generated knowledge layer. There is no REST search
+    endpoint of any kind on api.conviva.com — the REST surface has no discovery-by-meaning primitive.
+- tool: context-center-nexa-categories-list
+  reason: Knowledge-layer category taxonomy; no REST counterpart.
+- tool: context-center-nexa-knowledge-get
+  reason: Fetches an LLM-generated k_* knowledge summary; the knowledge layer is MCP-only.
+- tool: context-center-asset-get
+  reason: >-
+    Hydrates a customer-defined Context Center asset (pattern / metric / critical-event / dimension /
+    segment / template) by id. The Context Center asset model is not exposed over REST at all.
+- tool: nexa-analyze
+  reason: >-
+    Async open-ended AI analysis ("why did X change"). A server-side composite with no REST
+    equivalent; requires a fallbackReason enum.
+- tool: nexa-analyze-result
+  reason: Retrieves an async Nexa job result; no REST job API exists.
+- tool: insights-behavior-segment-list
+  reason: Insights behavior segments (formerly "patterns") are computed offline by Insights and are
+    not published on the REST surface.
+- tool: insights-behavior-segment-get
+  reason: Same — a stored Insights behavior segment with pre-computed insights, evidence and
+    conversion barriers, unavailable over REST.
+- tool: identity-c3-account-list
+  reason: >-
+    Lists the c3 accounts an OAuth caller is entitled to. REST has no account-discovery endpoint
+    because REST credentials are minted per c3 account in Pulse — the account is implicit in the key.
+
+rest_only:
+- capability: Viewer session detail
+  rest: ["/insights/3.0/sessions/content", "/insights/3.0/sessions/ad", "/insights/3.0/sessions/content/viewer", "/insights/3.0/sessions/ad/viewer"]
+  note: >-
+    No session tool appears in any published skill on dpi-mcp. mcp.conviva.com advertises a
+    /vsi/sessions service, so a session tool very likely exists there — its tool names are simply
+    not published anonymously. Recorded as rest_only with that caveat rather than guessed.
+- capability: Real-time metrics
+  rest: ["/insights/3.0/real-time-metrics/{metric}"]
+  note: 15-minute real-time window; no published MCP tool for it (again, /vsi/metrics may cover it).
+- capability: AI alerts
+  rest: ["/insights/2.6/ai-alerts/content-metrics", "/insights/2.6/ai-alerts/ad-metrics", "/insights/2.6/ai-alerts/content-metrics/{alert_id}", "/insights/2.6/ai-alerts/ad-metrics/{alert_id}"]
+  note: >-
+    mcp.conviva.com advertises /vsi/ai-alerts and /dpi/ai-alerts services and the MCP docs say alerts
+    are covered, but no alert tool name is published.
+- capability: Saved filter management
+  rest: ["/bulk_filters"]
+  note: Bulk create/read/update/delete of filters. No MCP tool — writes are absent from the published
+    agent surface entirely.
+- capability: Precision policy control
+  rest: ["/precision/v1.0/policies", "/precision/v1.0/policies/activate", "/precision/v1.0/policies/reorder"]
+  note: Write/control-plane operations gated behind Precision Admin. No MCP exposure.
+- capability: PII opt-out / privacy requests
+  rest: ["/pii-opt-out"]
+  note: Data-subject deletion workflow. Deliberately absent from the agent surface.
+- capability: Integration validation timeline
+  rest: ["/validation/v2/timeline"]
+  note: QA/sensor-integration tooling. No MCP exposure.
+- capability: Session replay
+  rest: []
+  note: >-
+    Inverse case — /session-replay is advertised in the dpi-mcp service descriptor but has no REST
+    endpoint AND no published tool name. Neither surface documents it publicly.
+
+divergence_summary: >-
+  The two surfaces barely overlap. REST is the Conviva-defined VSI measurement and administration
+  API; MCP is the customer-defined Context Center semantic layer plus AI analysis. Only
+  metric-query-run has a genuine (and still imperfect) REST analogue. Every write operation Conviva
+  exposes over REST — filters, Precision policy, PII opt-out — is absent from the agent surface,
+  which is read-only by construction. That is a deliberate and defensible agent-safety posture, and
+  worth recording as such rather than as a coverage gap.
+
+coverage:
+  tools_named: 11
+  tools_bound_to_rest: 2
+  tools_partially_bound: 1
+  mcp_only: 9
+  rest_capabilities_total: 8
+  rest_capabilities_with_a_tool: 1
+  mcp_servers: 2
+  mcp_services_advertised: 10
+  mcp_services_with_published_tool_names: 5
+  rest_operations_total: unknown        # no OpenAPI to count operations from
+  agent_surface_is_read_only: true
+
+x-evidence:
+  fetched: '2026-08-01'
+  mcp_tools_list_http_status: 401
+  openapi_probe_result: no spec found on any host

@@ -1,0 +1,90 @@
+generated: '2026-08-01'
+method: probed
+source: https://mcp.conviva.com/.well-known/oauth-authorization-server
+docs: https://docs.conviva.ai/connect-data/mcp/
+description: >-
+  Conviva's only OAuth surface is its two hosted MCP servers. The REST surface at api.conviva.com
+  is HTTP Basic with an API key pair and has NO scope model at all — REST authorization is by c3
+  account plus product entitlement (e.g. Precision Admin), not by scope. The scopes below are
+  taken verbatim from the live RFC 8414 / RFC 9728 discovery documents; Conviva publishes no
+  human-readable scope reference page, so the descriptions are the standard OIDC meanings and the
+  Conviva-specific `conviva` scope is recorded without an official description rather than guessed.
+
+schemes:
+- name: convivaMcpOAuth
+  server: https://mcp.conviva.com
+  source: https://mcp.conviva.com/.well-known/oauth-authorization-server
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://mcp.conviva.com/oauth/authorize
+    tokenUrl: https://mcp.conviva.com/oauth/token
+    registrationUrl: https://mcp.conviva.com/oauth/register
+    code_challenge_methods: [S256]
+- name: convivaDpiMcpOAuth
+  server: https://dpi-mcp.conviva.com
+  source: https://dpi-mcp.conviva.com/.well-known/oauth-authorization-server
+  identity_provider: Okta
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://dpi-mcp.conviva.com/oauth/authorize
+    tokenUrl: https://dpi-mcp.conviva.com/oauth/token
+    registrationUrl: https://dpi-mcp.conviva.com/oauth/register
+    code_challenge_methods: [S256]
+
+scopes:
+- scope: openid
+  description: OpenID Connect — request an ID token identifying the authenticated user.
+  flows: [authorizationCode]
+  advertised_in: [oauth-authorization-server, oauth-protected-resource]
+  sources: [https://mcp.conviva.com, https://dpi-mcp.conviva.com]
+- scope: profile
+  description: Access to the user's basic profile claims.
+  flows: [authorizationCode]
+  advertised_in: [oauth-authorization-server, oauth-protected-resource]
+  sources: [https://mcp.conviva.com, https://dpi-mcp.conviva.com]
+- scope: email
+  description: Access to the user's email claim.
+  flows: [authorizationCode]
+  advertised_in: [oauth-authorization-server, oauth-protected-resource]
+  sources: [https://mcp.conviva.com, https://dpi-mcp.conviva.com]
+- scope: conviva
+  description: null
+  description_note: >-
+    Conviva-specific resource scope. Advertised in the protected-resource metadata
+    (scopes_supported) and in the /mcp service descriptor's oauth.scopes, but NOT in the
+    authorization-server metadata's scopes_supported, and Conviva publishes no scope reference
+    page. Its exact grant semantics are undocumented — recorded, not guessed.
+  flows: [authorizationCode]
+  advertised_in: [oauth-protected-resource, service-descriptor]
+  sources: [https://mcp.conviva.com, https://dpi-mcp.conviva.com]
+
+discovery_discrepancy: >-
+  /.well-known/oauth-authorization-server lists scopes_supported [openid, profile, email] while
+  /.well-known/oauth-protected-resource lists [openid, profile, email, conviva] and the GET /mcp
+  service descriptor lists [openid, profile, conviva]. The three published lists disagree; the
+  union is recorded above with per-scope provenance.
+
+protected_resources:
+- resource: https://mcp.conviva.com
+  resource_name: mcp-server-conviva
+  authorization_servers: [https://mcp.conviva.com]
+  resource_documentation: https://mcp.conviva.com/health
+- resource: https://dpi-mcp.conviva.com
+  resource_name: mcp-server-conviva
+  authorization_servers: [https://dpi-mcp.conviva.com]
+  resource_documentation: https://dpi-mcp.conviva.com/health
+
+rest_authorization_model:
+  scheme: 'HTTP Basic (client-id : client-secret)'
+  scopes: none
+  unit_of_authorization: c3 account
+  entitlements:
+  - name: Precision Admin
+    effect: Required to create the credentials used for Precision Policy POST operations; without it
+      the API returns 403 Forbidden.
+  - name: Precision API activation
+    effect: Precision APIs must be activated for the c3 account, with edit permissions.
+
+x-evidence:
+  fetched: '2026-08-01'
+  http_status: 200

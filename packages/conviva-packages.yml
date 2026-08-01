@@ -1,0 +1,315 @@
+generated: '2026-08-01'
+method: searched
+source: npm registry search, Maven Central solrsearch, github.com/Conviva, CocoaPods specs repo
+description: >-
+  Conviva's first-party client-library estate is a SENSOR estate, not an API-client estate. The
+  packages below instrument player, app and agent runtimes to SEND telemetry to Conviva; none of
+  them is a generated client for the api.conviva.com REST surface, which Conviva expects callers
+  to hit directly over HTTPS with Basic auth. Publisher accounts (@convivainc on npm,
+  com.conviva.sdk on Maven Central, the Conviva GitHub org) confirm first-party provenance.
+  Third-party player-vendor connectors (Bitmovin, THEOplayer, MediaKind) are listed separately and
+  are NOT marked official.
+
+registries_probed:
+  npm: hit (@convivainc scope)
+  maven_central: hit (com.conviva.sdk group)
+  cocoapods: hit (github.com/Conviva/Conviva-PodSpecs)
+  swift_package_manager: hit (conviva-ios-sdk-spm, conviva-ios-appanalytics-spm, and siblings)
+  pypi: miss (no conviva* distribution; the Python Agent SDK ships from GitHub only)
+  rubygems: miss
+  nuget: miss
+  packagist: miss
+  crates_io: miss
+  pkg_go_dev: miss
+
+packages:
+# --- JavaScript / npm (@convivainc) ---
+- language: javascript
+  registry: npm
+  name: '@convivainc/conviva-core-sdk'
+  version: 4.4.1
+  url: https://www.npmjs.com/package/@convivainc/conviva-core-sdk
+  install: npm install @convivainc/conviva-core-sdk
+  official: true
+  role: Core JS video sensor
+- language: javascript
+  registry: npm
+  name: '@convivainc/conviva-js-coresdk'
+  version: 4.8.0
+  url: https://www.npmjs.com/package/@convivainc/conviva-js-coresdk
+  install: npm install @convivainc/conviva-js-coresdk
+  official: true
+  role: Core JS SDK (release channel)
+- language: javascript
+  registry: npm
+  name: '@convivainc/conviva-js-appanalytics'
+  version: 2.2.1
+  url: https://www.npmjs.com/package/@convivainc/conviva-js-appanalytics
+  install: npm install @convivainc/conviva-js-appanalytics
+  official: true
+  role: DPI (app analytics) sensor
+- language: javascript
+  registry: npm
+  name: '@convivainc/conviva-js-custom-app-analytics-sdk'
+  version: 2.2.0
+  url: https://www.npmjs.com/package/@convivainc/conviva-js-custom-app-analytics-sdk
+  install: npm install @convivainc/conviva-js-custom-app-analytics-sdk
+  official: true
+  role: Runtime-agnostic DPI sensor for non-browser JS runtimes
+- language: javascript
+  registry: npm
+  name: '@convivainc/conviva-js-agent-tracker'
+  version: 1.4.12
+  url: https://www.npmjs.com/package/@convivainc/conviva-js-agent-tracker
+  install: npm install @convivainc/conviva-js-agent-tracker
+  official: true
+  role: JavaScript Agent SDK — auto-collects AI-agent events and traces
+- language: javascript
+  registry: npm
+  name: '@convivainc/conviva-node-agent-sdk'
+  version: 1.0.4
+  url: https://www.npmjs.com/package/@convivainc/conviva-node-agent-sdk
+  install: npm install @convivainc/conviva-node-agent-sdk
+  official: true
+  role: Node.js Agent SDK (AI agent telemetry)
+- language: javascript
+  registry: npm
+  name: '@convivainc/conviva-js-html5'
+  version: 4.0.13
+  url: https://www.npmjs.com/package/@convivainc/conviva-js-html5
+  install: npm install @convivainc/conviva-js-html5
+  official: true
+  role: HTML5 video element module
+- language: javascript
+  registry: npm
+  name: '@convivainc/conviva-js-videojs'
+  version: 4.3.4
+  url: https://www.npmjs.com/package/@convivainc/conviva-js-videojs
+  install: npm install @convivainc/conviva-js-videojs
+  official: true
+  role: Video.js player module
+- language: javascript
+  registry: npm
+  name: '@convivainc/conviva-js-imasdk'
+  version: 4.0.10
+  url: https://www.npmjs.com/package/@convivainc/conviva-js-imasdk
+  install: npm install @convivainc/conviva-js-imasdk
+  official: true
+  role: Google IMA ads module
+- language: javascript
+  registry: npm
+  name: '@convivainc/conviva-js-daisdk'
+  version: 4.2.3
+  url: https://www.npmjs.com/package/@convivainc/conviva-js-daisdk
+  install: npm install @convivainc/conviva-js-daisdk
+  official: true
+  role: Google IMA DAI module
+- language: javascript
+  registry: npm
+  name: '@convivainc/conviva-js-chromecast-caf'
+  version: 4.0.13
+  url: https://www.npmjs.com/package/@convivainc/conviva-js-chromecast-caf
+  install: npm install @convivainc/conviva-js-chromecast-caf
+  official: true
+  role: Chromecast CAF module
+- language: javascript
+  registry: npm
+  name: '@convivainc/conviva-js-samsung-tizen'
+  version: 4.0.2
+  url: https://www.npmjs.com/package/@convivainc/conviva-js-samsung-tizen
+  install: npm install @convivainc/conviva-js-samsung-tizen
+  official: true
+  role: Samsung Tizen TV module
+- language: javascript
+  registry: npm
+  name: '@convivainc/conviva-js-playstation-webmaf'
+  version: 4.0.5
+  url: https://www.npmjs.com/package/@convivainc/conviva-js-playstation-webmaf
+  install: npm install @convivainc/conviva-js-playstation-webmaf
+  official: true
+  role: PlayStation WebMAF module
+- language: javascript
+  registry: npm
+  name: '@convivainc/conviva-js-playstation-trilithium'
+  version: 4.0.2
+  url: https://www.npmjs.com/package/@convivainc/conviva-js-playstation-trilithium
+  install: npm install @convivainc/conviva-js-playstation-trilithium
+  official: true
+  role: PlayStation Trilithium module
+- language: javascript
+  registry: npm
+  name: '@convivainc/conviva-js-replay'
+  version: 1.0.4
+  url: https://www.npmjs.com/package/@convivainc/conviva-js-replay
+  install: npm install @convivainc/conviva-js-replay
+  official: true
+  role: Session replay library
+- language: javascript
+  registry: npm
+  name: '@convivainc/conviva-react-native-appanalytics'
+  version: 0.5.0
+  url: https://www.npmjs.com/package/@convivainc/conviva-react-native-appanalytics
+  install: npm install @convivainc/conviva-react-native-appanalytics
+  official: true
+  role: React Native app analytics sensor
+
+# --- Android / Java / Kotlin (Maven Central, com.conviva.sdk) ---
+- language: java
+  registry: maven-central
+  name: com.conviva.sdk:conviva-core-sdk
+  version: 4.0.45
+  url: https://central.sonatype.com/artifact/com.conviva.sdk/conviva-core-sdk
+  install: implementation 'com.conviva.sdk:conviva-core-sdk:4.0.45'
+  official: true
+  role: Android core video sensor
+- language: java
+  registry: maven-central
+  name: com.conviva.sdk:conviva-exoplayer-sdk
+  version: 4.1.5
+  url: https://central.sonatype.com/artifact/com.conviva.sdk/conviva-exoplayer-sdk
+  install: implementation 'com.conviva.sdk:conviva-exoplayer-sdk:4.1.5'
+  official: true
+  role: ExoPlayer module
+- language: java
+  registry: maven-central
+  name: com.conviva.sdk:conviva-media3-sdk
+  version: 4.0.0
+  url: https://central.sonatype.com/artifact/com.conviva.sdk/conviva-media3-sdk
+  install: implementation 'com.conviva.sdk:conviva-media3-sdk:4.0.0'
+  official: true
+  role: AndroidX Media3 module
+- language: java
+  registry: maven-central
+  name: com.conviva.sdk:conviva-ima-sdk
+  version: 4.0.8
+  url: https://central.sonatype.com/artifact/com.conviva.sdk/conviva-ima-sdk
+  install: implementation 'com.conviva.sdk:conviva-ima-sdk:4.0.8'
+  official: true
+  role: Google IMA ads module
+- language: java
+  registry: maven-central
+  name: com.conviva.sdk:conviva-brightcove-sdk
+  version: 4.0.12
+  url: https://central.sonatype.com/artifact/com.conviva.sdk/conviva-brightcove-sdk
+  install: implementation 'com.conviva.sdk:conviva-brightcove-sdk:4.0.12'
+  official: true
+  role: Brightcove player module
+- language: java
+  registry: maven-central
+  name: com.conviva.sdk:conviva-android-tracker
+  version: 1.2.1
+  url: https://central.sonatype.com/artifact/com.conviva.sdk/conviva-android-tracker
+  install: implementation 'com.conviva.sdk:conviva-android-tracker:1.2.1'
+  official: true
+  role: Android app-analytics (DPI) tracker
+- language: java
+  registry: maven-central
+  name: com.conviva.sdk:conviva-react-native-tracker
+  version: 0.1.0
+  url: https://central.sonatype.com/artifact/com.conviva.sdk/conviva-react-native-tracker
+  install: implementation 'com.conviva.sdk:conviva-react-native-tracker:0.1.0'
+  official: true
+  role: React Native tracker (Android side)
+- language: java
+  registry: maven-central
+  name: com.conviva.sdk:conviva-nexplayer-sdk
+  version: 4.0.4
+  url: https://central.sonatype.com/artifact/com.conviva.sdk/conviva-nexplayer-sdk
+  install: implementation 'com.conviva.sdk:conviva-nexplayer-sdk:4.0.4'
+  official: true
+  role: NexPlayer module
+- language: java
+  registry: maven-central
+  name: com.conviva.sdk:conviva-mediaplayer-sdk
+  version: 2.145.0
+  url: https://central.sonatype.com/artifact/com.conviva.sdk/conviva-mediaplayer-sdk
+  install: implementation 'com.conviva.sdk:conviva-mediaplayer-sdk:2.145.0'
+  official: true
+  role: Android MediaPlayer module (2.x line)
+- language: java
+  registry: maven-central
+  name: com.conviva.sdk:android-plugin
+  version: 0.3.6
+  url: https://central.sonatype.com/artifact/com.conviva.sdk/android-plugin
+  install: classpath 'com.conviva.sdk:android-plugin:0.3.6'
+  official: true
+  role: Gradle instrumentation plugin
+
+# --- iOS / Apple ---
+- language: swift
+  registry: swift-package-manager
+  name: conviva-ios-sdk-spm
+  url: https://github.com/Conviva/conviva-ios-sdk-spm
+  install: '.package(url: "https://github.com/Conviva/conviva-ios-sdk-spm", from: "4.0.0")'
+  official: true
+  role: SPM distribution of ConvivaSDK
+- language: swift
+  registry: swift-package-manager
+  name: conviva-ios-appanalytics-spm
+  url: https://github.com/Conviva/conviva-ios-appanalytics-spm
+  install: '.package(url: "https://github.com/Conviva/conviva-ios-appanalytics-spm", from: "1.0.0")'
+  official: true
+  role: SPM distribution of iOS App Analytics (DPI)
+- language: swift
+  registry: swift-package-manager
+  name: conviva-ios-avfoundation-spm
+  url: https://github.com/Conviva/conviva-ios-avfoundation-spm
+  install: '.package(url: "https://github.com/Conviva/conviva-ios-avfoundation-spm", from: "4.0.0")'
+  official: true
+  role: SPM distribution of ConvivaAVFoundation
+- language: objective-c
+  registry: cocoapods
+  name: ConvivaSDK
+  url: https://github.com/Conviva/Conviva-PodSpecs
+  install: "pod 'ConvivaSDK'"
+  official: true
+  role: iOS/tvOS core video sensor (podspecs served from Conviva's own specs repo)
+
+# --- Python ---
+- language: python
+  registry: github
+  name: conviva-python-agent-sdk
+  url: https://github.com/Conviva/conviva-python-agent-sdk
+  install: install from the GitHub repository (not published to PyPI)
+  official: true
+  role: Python Agent SDK — AI-agent telemetry over OTLP/HTTP; configured with CONVIVA_CUSTOMER_KEY
+  note: Endpoints are computed automatically by the SDK; not distributed on PyPI as of 2026-08-01.
+
+third_party_connectors:
+- language: javascript
+  registry: npm
+  name: '@theoplayer/conviva-connector-web'
+  version: 3.3.1
+  url: https://www.npmjs.com/package/@theoplayer/conviva-connector-web
+  official: false
+  vendor: THEOplayer
+- language: javascript
+  registry: npm
+  name: '@bitmovin/player-integration-conviva'
+  version: 6.3.0
+  url: https://www.npmjs.com/package/@bitmovin/player-integration-conviva
+  official: false
+  vendor: Bitmovin
+- language: javascript
+  registry: npm
+  name: '@mediakind/mkplayer-conviva-plugin'
+  version: 1.0.0
+  url: https://www.npmjs.com/package/@mediakind/mkplayer-conviva-plugin
+  official: false
+  vendor: MediaKind
+
+github_org:
+  url: https://github.com/Conviva
+  id: 38673468
+  public_repos_observed: 60+
+  note: >-
+    Most repos are release channels for a single platform module (conviva-js-*, conviva-android-*,
+    conviva-ios-*). Also carries prometheus-conviva-exporter (Go) and mcp-marketplace.
+
+gaps:
+- No first-party REST API client library for api.conviva.com in any language.
+- No CLI.
+- Python Agent SDK is GitHub-only; nothing on PyPI.
+
+x-evidence:
+  fetched: '2026-08-01'

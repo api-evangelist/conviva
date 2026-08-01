@@ -1,0 +1,78 @@
+generated: '2026-08-01'
+method: searched
+source: https://docs.conviva.ai/api/whats-new-conviva-apis/
+url: https://docs.conviva.ai/api/whats-new-conviva-apis/
+title: What's New in Conviva APIs
+description: >-
+  Conviva maintains a dated API release-notes page. It is thin: the most recent API-surface entry
+  is May 2024, even though the docs page itself carries an "Updated 2026-07-01" stamp. MCP-server
+  changes are tracked separately on the Conviva MCP what's-new page rather than here, so the API
+  changelog understates the platform's actual rate of change.
+scheme: dated entries (no semantic version tags for the REST APIs)
+current_versions:
+  metrics: v3
+  sessions: v3
+  ai_alerts: '2.6'
+  precision_policy: v1.0
+  validation_timeline: v2
+page_last_updated: '2026-07-01'
+
+entries:
+- date: '2024-05-23'
+  apis: [Sessions V3 API]
+  breaking: false
+  additions:
+  - Allows ?Limit={N} in the query parameter to control the number of sessions in the response.
+  - Displays IP and IPv6 information in the network_info section of the API response.
+- date: '2024-03-31'
+  apis: [Metrics V2 API, Sessions V2 API, Viewers Module API]
+  breaking: true
+  type: deprecation
+  highlights:
+  - The V2 APIs are deprecated. Use the V3 version of these APIs to take advantage of the new
+    capabilities.
+  - The AI Alerts API, Precision Policy API and PII Opt-Out API are not part of this migration.
+- date: '2024-03-27'
+  apis: [Metrics V3 API, Sessions V3 API]
+  breaking: true
+  highlights:
+  - Improves retrieval of metrics and viewer sessions based on a given time range.
+  - The default time range will no more be effective for retrieving the historical metrics and
+    session data.
+
+related_changelogs:
+- name: What's New in Conviva MCP
+  url: https://docs.conviva.ai/api/ssd/conviva-connect/whats-new-conviva-mcp/
+  entries:
+  - date: '2026-03-03'
+    highlight: MCP access unified into a single endpoint.
+  - date: '2025-10'
+    highlight: Agent-based MCP requests added.
+- name: What's New in Conviva MDDI
+  url: https://docs.conviva.ai/api/ssd/conviva-connect/whats-new-conviva-mddi/
+- name: What's New in Conviva SDKs
+  url: https://docs.conviva.ai/conviva-sdks/whats-new/
+- name: What's New in Conviva Connect
+  url: https://docs.conviva.ai/connect-data/whats-new/
+- name: What's New in DPI (ECO)
+  url: https://docs.conviva.ai/dpi-content/whats-new/
+- name: What's New in VSI
+  url: https://docs.conviva.ai/vsi-content/whats-new/
+- name: What's New in Nexa
+  url: https://docs.conviva.ai/nexa/whats-new-nexa/
+- name: What's New in Precision
+  url: https://docs.conviva.ai/precision/whats-new-precision/
+
+feeds:
+  rss: null
+  atom: null
+  note: No machine-readable changelog feed is published for the APIs.
+
+gaps:
+- Most recent REST API entry is 2024-05-23 — no API-surface release notes for over two years.
+- No RSS/Atom/JSON feed.
+- Changelog is fragmented across at least six separate what's-new pages.
+
+x-evidence:
+  fetched: '2026-08-01'
+  http_status: 200

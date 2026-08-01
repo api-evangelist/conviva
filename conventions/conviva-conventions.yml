@@ -1,0 +1,163 @@
+generated: '2026-08-01'
+method: searched
+source: https://docs.conviva.ai/connect-data/apis/
+sources:
+- https://docs.conviva.ai/connect-data/apis/
+- https://docs.conviva.ai/api/apis/conviva-vsi-api/metrics-v3-api-guide/
+- https://docs.conviva.ai/api/apis/conviva-vsi-api/sessions-v3-api/
+- https://docs.conviva.ai/api/apis/conviva-vsi-api/ai-alerts-api-guide/
+description: >-
+  Cross-cutting request/response semantics for the Conviva REST surface at api.conviva.com,
+  captured from the docs. Conviva's public API is overwhelmingly READ-shaped — Metrics V3,
+  Sessions V3, AI Alerts and Validation Timeline are all HTTP GET — with writes confined to Bulk
+  Filters, Precision Policy and PII Opt-Out.
+
+authentication:
+  style: HTTP Basic
+  credential: 'client-Id : client-secret API key pair from Pulse API Management'
+  header: 'Authorization: Basic base64(client_id:client_secret)'
+  scoping: c3 account
+  detail: authentication/conviva-authentication.yml
+
+idempotency:
+  supported: false
+  header: null
+  note: >-
+    Conviva documents NO idempotency key, no request-deduplication window, and no retry-safety
+    contract for its write operations (Bulk Filters create/update/delete, Precision Policy
+    activate/reorder, PII Opt-Out submission). Retries of a failed write are not documented as
+    safe. Recorded as absent — no Idempotency pointer is emitted in apis.yml for this provider.
+  safe_by_method:
+    GET: true
+    POST: unknown
+    PUT: unknown
+    DELETE: unknown
+
+pagination:
+  style: cap-and-split
+  supported: false
+  note: >-
+    There is no cursor or offset pagination anywhere in the public surface. Result sets are CAPPED,
+    and the documented remedy for exceeding a cap is to split the query time range into multiple
+    intervals — the caller partitions by time, not by page token.
+  parameters:
+  - name: limit
+    applies_to: /insights/3.0/sessions/*
+    default: 50
+    max: 500
+    note: Maximum 500 viewer sessions per response.
+  - name: limit
+    applies_to: /insights/3.0/metrics/*/group-by/*
+    default: 50
+    max: 500
+    note: Values above the default 50 restrict the time range to a maximum of 24 hours.
+  response_fields: []
+  has_more_signal: none
+
+sorting:
+  parameters:
+  - name: sort_by
+    applies_to: group-by queries
+  - name: order
+    values: [asc, desc]
+
+time_range:
+  required: true
+  note: >-
+    Since the 2024-03-27 release the default time range is no longer effective for retrieving
+    historical metrics and session data — a time range must be specified explicitly.
+  formats:
+  - name: days
+    example: days=5
+    applies_to: historical
+    max: 90
+  - name: minutes
+    example: minutes=10
+    applies_to: real-time
+    max: 15
+  - name: start_date / end_date
+    format: ISO 8601 (YYYY-MM-DDTHH:mm:ssZ)
+    example: start_date=2022-01-01T04:00:00Z&end_date=2022-01-02T04:00:00Z
+  - name: start_epoch / end_epoch
+  - name: start_epoch_ms / end_epoch_ms
+  granularity:
+    parameter: granularity
+    default_historical: PT1H
+    default_real_time: PT1M
+    format: ISO 8601 duration
+
+filtering:
+  saved_filters:
+    parameter: filter_id
+    note: Mutually exclusive with dimensional filters.
+  dimensional_filters:
+    prefixes: [geo_, device_, tag_]
+    combination: Repeating the same dimension ORs the values together.
+    example: 'geo_city_name=Los Angeles, California, United States&device_os=Android'
+  kpi_thresholds:
+    parameter: kpi_id
+    default: 1
+    default_meaning: Conviva Good
+  metric_selection:
+    parameter: metric
+    applies_to: /insights/3.0/metrics/custom-selection
+    max_per_request: 12
+
+versioning:
+  scheme: uri-path
+  current:
+    insights: '3.0'
+    ai_alerts: '2.6'
+    precision: v1.0
+    validation_timeline: v2
+  note: Each product line versions its own path segment; there is no global API version.
+  detail: lifecycle/conviva-lifecycle.yml
+
+error_envelope:
+  media_type: application/json
+  problem_json: false
+  shape: Per-API status tables; gateway 401 returns {"message":"Unauthorized"}.
+  detail: errors/conviva-error-codes.yml
+
+rate_limit_signaling:
+  headers: none
+  note: >-
+    Conviva publishes rate limits in prose but returns NO rate-limit headers, so a client cannot
+    read remaining quota and must self-throttle. 429 remediation is "ensure the interval between
+    API calls is more than one minute."
+  detail: rate-limits/conviva-rate-limits.yml
+
+request_tracing:
+  request_id_header: null
+  note: No documented correlation/request-id header.
+
+field_expansion:
+  supported: false
+metadata:
+  custom_tags:
+    note: Custom session tags are addressable as dimensional filters via the tag_{custom_tag} prefix.
+    deprecation: Non-dimension custom tags are being deprecated (see lifecycle/).
+
+content_negotiation:
+  request_media_type: application/json (writes)
+  response_media_type: application/json
+
+data_freshness:
+  real_time_window: up to 15 minutes
+  historical_window: up to 90 days per request
+  webhook_delay: '"There may be a potential delay of up to 6 to 10 minutes between issue occurrence
+    and webhook notifications."'
+  deleted_resources: >-
+    After a resource is deleted from an account, the resource name may still appear in related
+    dimension tables if long sessions using it started before the deletion.
+
+gaps:
+- No idempotency contract on any write operation.
+- No pagination — result caps plus manual time-range splitting.
+- No rate-limit response headers.
+- No request-id header for support correlation.
+- No RFC 9457 problem details.
+- No OpenAPI to encode any of the above machine-readably.
+
+x-evidence:
+  fetched: '2026-08-01'

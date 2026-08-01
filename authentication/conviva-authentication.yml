@@ -1,0 +1,117 @@
+generated: '2026-08-01'
+method: searched
+source: https://docs.conviva.ai/connect-data/apis/
+docs:
+- https://docs.conviva.ai/connect-data/apis/
+- https://docs.conviva.ai/vsi-pages/api-mgt/api-management-4129047/
+- https://docs.conviva.ai/connect-data/mcp/
+- https://mcp.conviva.com/.well-known/oauth-authorization-server
+- https://dpi-mcp.conviva.com/.well-known/oauth-authorization-server
+note: >-
+  Derived by SEARCH of the docs, not from OpenAPI — Conviva publishes no machine-readable spec
+  (its own APIs page says the Scalar/OpenAPI references "are being wired up separately"), so
+  there are no securitySchemes objects to aggregate.
+
+summary:
+  types: [http, oauth2]
+  http_schemes: [basic]
+  api_key_in: []
+  oauth2_flows: [authorizationCode]
+  surfaces:
+    rest: 'HTTP Basic with a Conviva API key pair (client-id : client-secret)'
+    mcp: OAuth 2.1 authorization_code + PKCE S256 with dynamic client registration; HTTP Basic
+      accepted on mcp.conviva.com for autonomous agents
+
+schemes:
+- name: convivaApiKeyBasic
+  type: http
+  scheme: basic
+  applies_to:
+  - Conviva Metrics V3 API
+  - Conviva Sessions V3 API
+  - Conviva AI Alerts API
+  - Conviva Bulk Filters API
+  - Conviva Precision Policy API
+  - Conviva PII Opt-Out API
+  - Conviva Validation Timeline API v2
+  credential:
+    kind: api key pair
+    fields: [client-Id, client-secret]
+    issued_at: Pulse -> API Management page
+    encoding: 'echo -n "{client_id}:{client_secret}" | base64'
+    header: 'Authorization: Basic {base64(client_id:client_secret)}'
+  warnings:
+  - >-
+    "Do not use Pulse user-based credentials for any API request. Pulse user-based credentials and
+    Conviva API keys are different. Calling any Conviva APIs with Pulse user-based credentials
+    results in unrecognized credentials and authentication failure."
+  - Precision Policy POST operations require credentials created by a Precision Admin; otherwise
+    the API returns HTTP 403 Forbidden.
+  errors:
+    invalid_credentials: 401 Unauthorized — Invalid HTTP Authorization / check the credentials
+    insufficient_privilege: 403 Forbidden — API not activated for the c3 account, or no edit permission
+  scoping:
+    unit: c3 account
+    note: Credentials, rate limits and data access are all scoped to a c3 account.
+
+- name: convivaMcpOAuth
+  type: oauth2
+  applies_to:
+  - Conviva MCP Server (https://mcp.conviva.com/mcp)
+  - Conviva DPI MCP Server (https://dpi-mcp.conviva.com/mcp)
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://mcp.conviva.com/oauth/authorize
+    tokenUrl: https://mcp.conviva.com/oauth/token
+    registrationUrl: https://mcp.conviva.com/oauth/register
+    jwksUri: https://mcp.conviva.com/.well-known/jwks.json
+    scopes: [openid, profile, email, conviva]
+    pkce: S256
+    token_endpoint_auth_methods: [none]
+    grant_types: [authorization_code, refresh_token]
+    server: https://mcp.conviva.com
+  - flow: authorizationCode
+    authorizationUrl: https://dpi-mcp.conviva.com/oauth/authorize
+    tokenUrl: https://dpi-mcp.conviva.com/oauth/token
+    registrationUrl: https://dpi-mcp.conviva.com/oauth/register
+    jwksUri: https://dpi-mcp.conviva.com/.well-known/jwks.json
+    scopes: [openid, profile, email, conviva]
+    pkce: S256
+    token_endpoint_auth_methods: [none]
+    grant_types: [authorization_code, refresh_token]
+    server: https://dpi-mcp.conviva.com
+    identity_provider: Okta
+  discovery:
+    authorization_server_metadata: RFC 8414 (/.well-known/oauth-authorization-server) — 200 on both hosts
+    protected_resource_metadata: RFC 9728 (/.well-known/oauth-protected-resource) — 200 on both hosts
+    dynamic_client_registration: RFC 7591 (/oauth/register advertised on both hosts)
+  challenge_observed: 'WWW-Authenticate: Bearer realm="mcp", error="invalid_request",
+    error_description="Missing or malformed Authorization header"'
+
+- name: convivaMcpBasic
+  type: http
+  scheme: basic
+  applies_to:
+  - Conviva MCP Server (https://mcp.conviva.com/mcp)
+  credential:
+    kind: api key pair
+    fields: [client_id, client_secret]
+    issued_at: Pulse -> API Management page
+    header: 'Authorization: Basic <base64(client_id:client_secret)>'
+  purpose: Non-interactive / autonomous agent access where a browser OAuth round-trip is impossible.
+  note: >-
+    Docs recommend OAuth over Basic for MCP because OAuth carries user-based authorization and
+    scopes access to the c3 accounts the user is entitled to.
+
+sso:
+  customer_sso: https://docs.conviva.ai/conviva-overview/conviva-sso-federation/
+  note: Conviva Pulse supports SSO federation for portal users — separate from API credentials.
+
+gaps:
+- No OpenID Connect discovery document (/.well-known/openid-configuration) on any Conviva host.
+- No API-key-in-header or query-parameter scheme; Basic only on the REST surface.
+- No mutualTLS.
+- No machine-readable securitySchemes because no OpenAPI is published.
+
+x-evidence:
+  fetched: '2026-08-01'

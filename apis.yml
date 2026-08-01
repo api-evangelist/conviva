@@ -1,18 +1,172 @@
 aid: conviva
 name: Conviva
-description: 'Conviva is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: 'Conviva is the streaming-media and digital-experience analytics company behind Experience-Centric
+  Operations (ECO) — a real-time, full-census operational data platform that stitches client-side telemetry
+  from its Sensor SDKs into stateful, per-viewer experience analytics for video streamers, broadcasters
+  and app publishers. Its Pulse portal is fronted by a public REST surface at api.conviva.com covering
+  Metrics V3, Sessions V3, AI Alerts, Bulk Filters, Precision Policy, PII Opt-Out and Validation Timeline,
+  plus Conviva Connect session-summary data feeds (S3/GCS/Snowflake/BigQuery/SFTP), alert webhooks, and
+  two hosted OAuth-protected Model Context Protocol servers (mcp.conviva.com for VSI/DPI metrics, alerts
+  and sessions; dpi-mcp.conviva.com for Context Center, Nexa analysis, metric query and session replay).
+  Conviva publishes a large first-party SDK estate — JavaScript/npm, Android/Maven, iOS/CocoaPods+SPM,
+  React Native, Node and Python agent SDKs — and a Claude plugin marketplace carrying three provider-authored
+  Agent Skills for its DPI MCP server. Authentication across the REST surface is HTTP Basic with a
+  client-id/client-secret API key pair generated in Pulse API Management.'
 url: https://raw.githubusercontent.com/api-evangelist/conviva/refs/heads/main/apis.yml
+image: https://www.conviva.ai/wp-content/uploads/2025/10/conviva-logo.svg
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-08-01'
 modified: '2026-08-01'
 tags:
+- Analytics
+- Streaming
+- Video
+- Observability
+- Monitoring
+- Media
+- Quality of Experience
+- Real Time
+- Telemetry
+- Agents
+- MCP
 - Company
-apis: []
+apis:
+- aid: conviva:metrics-v3
+  name: Conviva Metrics V3 API
+  description: Programmatic access to historical and real-time Conviva experience metrics by metric name,
+    with optional group-by dimensions, saved or dimensional filters, KPI thresholds and sorting. Historical
+    requests run against /insights/3.0/metrics (up to 90 days, PT1H default granularity); real-time runs
+    against /insights/3.0/real-time-metrics (up to 15 minutes, PT1M default granularity).
+  humanURL: https://docs.conviva.ai/api/apis/conviva-vsi-api/metrics-v3-api-guide/
+  baseURL: https://api.conviva.com/insights/3.0/metrics
+  tags:
+  - Metrics
+  - Analytics
+  - Video
+  properties:
+  - type: Documentation
+    url: https://docs.conviva.ai/api/apis/conviva-vsi-api/metrics-v3-api-guide/
+  - type: RateLimits
+    url: rate-limits/conviva-rate-limits.yml
+- aid: conviva:sessions-v3
+  name: Conviva Sessions V3 API
+  description: Session-level detail for content and ad sessions, including per-viewer session diagnostics,
+    network_info with IPv4/IPv6, and summary metrics. Endpoints cover /sessions/content, /sessions/ad and
+    their /viewer variants, capped at 500 sessions per response via ?limit={N}.
+  humanURL: https://docs.conviva.ai/api/apis/conviva-vsi-api/sessions-v3-api/
+  baseURL: https://api.conviva.com/insights/3.0/sessions
+  tags:
+  - Sessions
+  - Diagnostics
+  - Video
+  properties:
+  - type: Documentation
+    url: https://docs.conviva.ai/api/apis/conviva-vsi-api/sessions-v3-api/
+- aid: conviva:ai-alerts
+  name: Conviva AI Alerts API
+  description: Retrieval of AI-driven content and ad alerts, alert diagnostics and impacted-session detail,
+    filterable by time range and severity. Endpoints are /insights/2.6/ai-alerts/content-metrics and
+    /insights/2.6/ai-alerts/ad-metrics, with per-alert lookup by {alert_id}.
+  humanURL: https://docs.conviva.ai/api/apis/conviva-vsi-api/ai-alerts-api-guide/
+  baseURL: https://api.conviva.com/insights/2.6/ai-alerts
+  tags:
+  - Alerts
+  - Monitoring
+  - AI
+  properties:
+  - type: Documentation
+    url: https://docs.conviva.ai/api/apis/conviva-vsi-api/ai-alerts-api-guide/
+- aid: conviva:bulk-filters
+  name: Conviva Bulk Filters API
+  description: Bulk create, retrieve, update and delete of saved Conviva filters so large filter sets can
+    be managed programmatically. Each call processes a maximum of 100 filters.
+  humanURL: https://docs.conviva.ai/api/apis/conviva-vsi-api/bulk-filter-api/
+  baseURL: https://api.conviva.com/bulk_filters
+  tags:
+  - Filters
+  - Configuration
+  properties:
+  - type: Documentation
+    url: https://docs.conviva.ai/api/apis/conviva-vsi-api/bulk-filter-api/
+- aid: conviva:precision-policy
+  name: Conviva Precision Policy API
+  description: Programmatic control over Conviva Precision policies — retrieve policy definitions and their
+    filters and resource shares, activate policies, and reorder Precision filters. POST operations require
+    credentials created by a Precision Admin or the API returns 403.
+  humanURL: https://docs.conviva.ai/api/apis/conviva-vsi-api/precision-policy-api/
+  baseURL: https://api.conviva.com/precision/v1.0/policies
+  tags:
+  - Policy
+  - Configuration
+  properties:
+  - type: Documentation
+    url: https://docs.conviva.ai/api/apis/conviva-vsi-api/precision-policy-api/
+- aid: conviva:pii-opt-out
+  name: Conviva PII Opt-Out API
+  description: Privacy-request surface for marking viewer identifiers for opt-out and deletion of Personally
+    Identifiable Information, plus retrieval of opt-out request status. Supports GDPR/CCPA data-subject
+    workflows against the Conviva data platform.
+  humanURL: https://docs.conviva.ai/api/apis/conviva-vsi-api/pii-opt-out-api/
+  baseURL: https://api.conviva.com/pii-opt-out
+  tags:
+  - Privacy
+  - Compliance
+  - GDPR
+  properties:
+  - type: Documentation
+    url: https://docs.conviva.ai/api/apis/conviva-vsi-api/pii-opt-out-api/
+- aid: conviva:validation-timeline-v2
+  name: Conviva Validation Timeline API v2
+  description: Session validation timeline data for QA and sensor-integration testing, queried by viewer_id
+    and/or session_id, used to verify that a Conviva Sensor integration is emitting the expected event
+    timeline before a build ships.
+  humanURL: https://docs.conviva.ai/api/apis/conviva-vsi-api/validation-timeline-api-v2/
+  baseURL: https://api.conviva.com/validation/v2/timeline
+  tags:
+  - Validation
+  - Testing
+  - Integration
+  properties:
+  - type: Documentation
+    url: https://docs.conviva.ai/api/apis/conviva-vsi-api/validation-timeline-api-v2/
+- aid: conviva:mcp
+  name: Conviva MCP Server
+  description: Hosted Model Context Protocol server exposing Conviva VSI and DPI data to agents across five
+    sub-services — /vsi/metrics, /vsi/ai-alerts, /vsi/sessions, /dpi/metrics and /dpi/ai-alerts. Protected
+    by OAuth 2.1 (authorization_code + PKCE S256, dynamic client registration) or HTTP Basic with a Pulse
+    API key; tools/list requires authentication.
+  humanURL: https://docs.conviva.ai/connect-data/mcp/
+  baseURL: https://mcp.conviva.com/mcp
+  tags:
+  - MCP
+  - Agents
+  - Analytics
+  properties:
+  - type: MCPServer
+    url: mcp/conviva-mcp.yml
+  - type: Documentation
+    url: https://docs.conviva.ai/connect-data/mcp/
+  - type: ToolCrosswalk
+    url: mcp/conviva-tool-crosswalk.yml
+- aid: conviva:dpi-mcp
+  name: Conviva DPI MCP Server
+  description: Hosted Model Context Protocol server for the Conviva Digital Intelligence Platform, exposing
+    /insights, /nexa, /context-center, /session-replay and /metric-query sub-services. Authenticates via
+    Okta-backed OAuth 2.1 with dynamic client registration; distributed to agents through Conviva's Claude
+    plugin marketplace alongside three provider-authored Agent Skills.
+  humanURL: https://github.com/Conviva/mcp-marketplace
+  baseURL: https://dpi-mcp.conviva.com/mcp
+  tags:
+  - MCP
+  - Agents
+  - Context Center
+  properties:
+  - type: MCPServer
+    url: mcp/conviva-mcp.yml
+  - type: AgentSkill
+    url: skills/_index.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -20,4 +174,89 @@ maintainers:
   email: info@apis.io
 common:
 - type: Website
-  url: https://forgeglobal.com/conviva_stock/
+  url: https://www.conviva.ai/
+- type: DeveloperPortal
+  url: https://docs.conviva.ai/conviva-overview/developer-tools/
+- type: Documentation
+  url: https://docs.conviva.ai/
+- type: APIReference
+  url: https://docs.conviva.ai/connect-data/apis/
+- type: GettingStarted
+  url: https://docs.conviva.ai/api/apis/conviva-vsi-api/metrics-v3-api-guide/
+- type: Support
+  url: https://www.conviva.ai/contact/
+- type: Blog
+  url: https://www.conviva.ai/blog/
+- type: GitHubOrganization
+  url: https://github.com/Conviva
+- type: SignUp
+  url: https://www.conviva.ai/get-started
+- type: Login
+  url: https://pulse.conviva.com/
+- type: TermsOfService
+  url: https://legal.conviva.ai/terms-of-use/
+- type: PrivacyPolicy
+  url: https://legal.conviva.ai/privacy-policy/
+- type: StatusPage
+  url: https://status.conviva.com/
+- type: Deprecation
+  url: https://docs.conviva.ai/api/whats-new-conviva-apis/
+- type: ChangeLog
+  url: changelog/conviva-changelog.yml
+- type: Lifecycle
+  url: lifecycle/conviva-lifecycle.yml
+- type: Authentication
+  url: authentication/conviva-authentication.yml
+- type: OAuthScopes
+  url: scopes/conviva-scopes.yml
+- type: Packages
+  url: packages/conviva-packages.yml
+- type: SDKs
+  url: packages/conviva-packages.yml
+- type: WellKnown
+  url: well-known/conviva-well-known.yml
+- type: LLMsTxt
+  url: llms/conviva-llms.txt
+- type: Conventions
+  url: conventions/conviva-conventions.yml
+- type: ErrorCatalog
+  url: errors/conviva-error-codes.yml
+- type: RateLimits
+  url: rate-limits/conviva-rate-limits.yml
+- type: Webhooks
+  url: asyncapi/conviva-alerts-webhooks.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Conformance
+  url: conformance/conviva-conformance.yml
+- type: Compliance
+  url: https://www.conviva.ai/security/
+- type: TrustCenter
+  url: security/conviva-trust-center.yml
+- type: DomainSecurity
+  url: security/conviva-domain-security.yml
+x-enrichment-notes:
+  no_security_pointer: >-
+    No `Security` / `VulnerabilityDisclosure` pointer is emitted. Conviva publishes a security
+    posture page (ISO 27001, annual pentest, continuous scanning) but NO coordinated vulnerability
+    disclosure channel — no /.well-known/security.txt on any host, no bug bounty, no security@
+    address. Recording a disclosure program it does not run would be fabrication.
+  no_agent_card: >-
+    No `AgentCard` pointer. /.well-known/agent-card.json and /.well-known/agent.json miss on every
+    Conviva host (404 on mcp.conviva.com and api.conviva.com, 405 on dpi-mcp.conviva.com). Agent
+    cards are search-only and are never authored on a provider's behalf.
+  no_idempotency_pointer: >-
+    No `Idempotency` pointer. Conviva documents no idempotency key or retry-safety contract for any
+    write operation.
+  no_openapi: >-
+    No OpenAPI/Swagger found after probing /openapi.json, /openapi.yaml, /swagger.json, /api-docs,
+    /v1/openapi.json and /redoc on api.conviva.com, docs.conviva.ai, docs.conviva.com and
+    developer.conviva.com. Conviva's own APIs page confirms it: the Scalar reference "renders a
+    placeholder until specs exist." api.conviva.com/insights/3.0/openapi.json returns 401, which is
+    the gateway auth-gating every path under /insights/3.0/, not a gated spec.
+
+x-enrichment:
+  date: 2026-08-01
+  status: enriched
+  artifacts_added: 26
+  pass: local-v1

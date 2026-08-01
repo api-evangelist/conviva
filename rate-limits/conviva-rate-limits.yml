@@ -1,0 +1,113 @@
+specification: API Commons Rate Limits
+specificationVersion: '0.1'
+schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main/schema/api-commons.yml#/$defs/RateLimits
+provider: Conviva
+providerId: conviva
+generated: '2026-08-01'
+created: '2026-08-01'
+modified: '2026-08-01'
+method: searched
+source: https://docs.conviva.ai/connect-data/apis/
+sources:
+- https://docs.conviva.ai/connect-data/apis/
+- https://docs.conviva.ai/api/apis/conviva-vsi-api/metrics-v3-api-guide/
+- https://docs.conviva.ai/api/apis/conviva-vsi-api/precision-policy-api/
+tags:
+- Rate Limiting
+- Analytics
+- Streaming
+description: >-
+  Conviva rate limits are expressed as CONCURRENT requests per minute per c3 account, and they are
+  a function of both request count and applied filters: "A 500 concurrent request limit is reached
+  with either 100 requests with 5 filters or 500 requests with 1 filter." Historical Metrics V3 and
+  Sessions V3 SHARE one 400-concurrent pool. A separate global ceiling of 3000 requests per 5
+  minutes applies per IP address across all endpoints. Response size is capped independently of
+  request rate.
+scope: c3 account (plus a per-IP global ceiling)
+headers:
+  rateLimitRemaining: null
+  retryAfter: null
+  note: Conviva documents no rate-limit response headers — clients cannot read remaining quota.
+responseCodes:
+  throttled: 429
+  payloadTooLarge: 413
+limits:
+- name: Global — all API endpoints
+  scope: ip
+  endpoint: all
+  metric: requests
+  limit: 3000
+  timeFrame: 5 minutes
+- name: Real-Time Metrics v3
+  scope: c3_account
+  endpoint: /insights/3.0/real-time-metrics
+  metric: concurrent_requests
+  limit: 500
+  timeFrame: minute
+- name: Historical Metrics v3
+  scope: c3_account
+  endpoint: /insights/3.0/metrics
+  metric: concurrent_requests
+  limit: 400
+  timeFrame: minute
+  shared_with:
+  - /insights/3.0/sessions/*
+- name: Sessions v3
+  scope: c3_account
+  endpoint: /insights/3.0/sessions/*
+  metric: concurrent_requests
+  limit: 400
+  timeFrame: minute
+  shared_with:
+  - /insights/3.0/metrics
+- name: Precision Policy API
+  scope: c3_account
+  endpoint: /precision/v1.*/policies/activate, /precision/v1.*/policies/reorder
+  metric: concurrent_requests
+  limit: 40
+  timeFrame: minute
+- name: Precision Policy API — hourly ceiling
+  scope: c3_account
+  endpoint: /precision/v1.*/policies/activate, /precision/v1.*/policies/reorder
+  metric: requests
+  limit: 160
+  timeFrame: hour
+payload_limits:
+- name: Metrics V3 response payload
+  endpoint: /insights/3.0/metrics
+  metric: bytes
+  limit: 5700000
+  on_exceed: HTTP 413 Request Entity Too Large
+- name: Sessions V3 sessions per response
+  endpoint: /insights/3.0/sessions/*
+  metric: sessions
+  limit: 500
+  parameter: '?limit={N}'
+  default: 50
+  on_exceed: Split the query time range into multiple intervals.
+- name: Metrics V3 group-by dimension entities
+  endpoint: /insights/3.0/metrics/*/group-by/*
+  metric: entities
+  limit: 500
+  parameter: limit
+  default: 50
+  note: When limit > 50 the queryable time range is restricted to a maximum of 24 hours.
+- name: Metrics V3 custom-selection metrics per request
+  endpoint: /insights/3.0/metrics/custom-selection
+  metric: metrics
+  limit: 12
+- name: Bulk Filters per call
+  endpoint: /bulk_filters
+  metric: filters
+  limit: 100
+time_range_limits:
+- endpoint: /insights/3.0/metrics
+  parameter: days
+  max: 90
+- endpoint: /insights/3.0/real-time-metrics
+  parameter: minutes
+  max: 15
+remediation:
+  '429': Ensure that the interval between the API calls is more than one minute.
+  '413': Narrow the filter/group-by or shorten the time range so the response is under 5,700,000 bytes.
+  contact: For higher rate plans, contact a Conviva representative (support@conviva.com).

@@ -1,0 +1,153 @@
+generated: '2026-08-01'
+method: searched
+source: https://docs.conviva.ai/vsi-pages/basics/settings/setting-webhook-notifications-1474897/
+sources:
+- https://docs.conviva.ai/vsi-pages/basics/settings/setting-webhook-notifications-1474897/
+- https://docs.conviva.ai/eco/setting-webhook-notifications-1474897/
+spec_type: none
+asyncapi: false
+asyncapi_note: >-
+  Conviva publishes NO AsyncAPI document. It does operate a real outbound event surface — alert
+  webhooks — so the surface is captured here as a Webhooks catalog rather than fabricating a
+  spec. Probes for /asyncapi.yaml, /asyncapi.json and an event catalog on docs.conviva.ai,
+  api.conviva.com and the Conviva GitHub org all missed.
+
+webhooks:
+  supported: true
+  direction: outbound (Conviva -> customer endpoint)
+  transport: HTTPS POST
+  content_type: application/json
+  configured_by: Pulse admins only (Settings -> Notification Channels -> Webhooks)
+  destination_requirement: The destination URL must accept HTTP POST and return an HTTP 2xx status.
+  products: [VSI (video), DPI/ECO]
+
+  authentication:
+    modes:
+    - basic (username / password)
+    - token
+    - custom header
+    optional: true
+    storage: Credentials are encrypted at rest in Conviva's system.
+    signature: null
+    signature_note: No HMAC payload signature or shared-secret signing scheme is documented — receivers
+      cannot cryptographically verify origin, only authenticate outbound with credentials Conviva
+      presents.
+
+  delivery:
+    retries: 5 attempts
+    schedule:
+    - attempt: 1
+      delay: immediate
+    - attempt: 2
+      delay: 10s after failure
+    - attempt: 3
+      delay: 15s after failure
+    - attempt: 4
+      delay: 90s after failure
+    - attempt: 5
+      delay: 180s after failure
+    stop_condition: Retries continue until an HTTP 2xx response is received or the final attempt is
+      exhausted.
+    latency: '"There may be a potential delay of up to 6 to 10 minutes between issue occurrence and
+      webhook notifications."'
+    ordering: not documented
+    deduplication: not documented
+
+  events:
+  - name: AI Alert
+    description: Automatically detected anomaly in streaming/app performance, raised by Conviva's AI
+      alerting.
+    envelope_field: alert_source
+    envelope_value: AI Alert
+    payload_fields:
+    - name: source
+      value: Conviva
+      note: fixed value
+    - name: version
+      format: Major.Minor.Revision
+      current: 1.0.0
+    - name: alert_source
+    - name: event_id
+      note: unique alert identifier
+    - name: account_name
+    - name: metric_name
+      example: Rebuffering Ratio
+    - name: root_cause
+    - name: cumulative_impacted_unique_devices
+    - name: alert_time
+    - name: severity
+      values: [info, warning, critical]
+    - name: diagnostic_report_url
+    - name: custom_fields
+      note: user-defined key-value pairs
+  - name: Manual Alert
+    description: Administrator-configured metric threshold violation.
+    payload_fields:
+    - name: alert_id
+    - name: event_id
+    - name: alert_name
+    - name: priority
+      values: [P1, P2, P3]
+    - name: filter_name
+    - name: filter_id
+    - name: metric_name
+    - name: condition
+      example: 9.4 < 3345.0
+    - name: sample_size
+    - name: custom_fields
+
+  destinations:
+  - name: Generic webhook URL
+    note: Any REST endpoint accepting HTTP POST.
+  - name: Slack
+    note: Via the Slack Webhook Builder / workflow.
+    docs: https://docs.conviva.ai/vsi-pages/basics/settings/slack-integration/
+  - name: Google Chat
+    docs: https://docs.conviva.ai/vsi-pages/ea-features/google-chat-notification/
+  - name: PagerDuty
+    docs: https://docs.conviva.ai/vsi-pages/basics/settings/pagerduty-integration-guide-1475270/
+  - name: Ticketing systems
+    note: JIRA cited as an example destination.
+  - name: Datadog
+    docs: https://docs.conviva.ai/vsi-pages/basics/settings/datadog-integration-guide/
+  - name: BigPanda
+    docs: https://docs.conviva.ai/vsi-pages/basics/settings/bigpanda-integration-guide/
+
+  testing:
+    note: The webhook configuration UI requires a test validation before the channel can be activated.
+
+  other_notification_channels:
+  - Email subscriptions (AI Alert email, executive SPI email, daily emails)
+  - Salesforce Service Cloud application
+
+streaming_data_feeds:
+  name: Conviva Connect
+  description: >-
+    Batch/streaming session-summary data feeds — an event surface, but delivered as files/tables to
+    a customer sink rather than as a subscribable message broker, so it is not AsyncAPI-shaped.
+  docs: https://docs.conviva.ai/api/ssd/conviva-connect/eco-connect/
+  feeds:
+  - session-feed
+  - event-feed
+  - flow-feed
+  - ad-feed
+  - dpi-event-feed
+  - dpi-flow-feed
+  summaries:
+  - content-summary
+  - content-summary-parquet
+  - ad-summary
+  - eco-summary
+  - viewer-summary
+  - identity-summary
+  sinks: [AWS S3, Google Cloud Storage, Snowflake, BigQuery, SFTP]
+
+gaps:
+- No AsyncAPI document for the alert webhook surface.
+- No HMAC/JWS payload signing — receivers cannot verify webhook authenticity.
+- No JSON Schema published for either alert payload.
+- No documented event catalog endpoint or replay/backfill API for missed deliveries.
+
+x-evidence:
+  fetched: '2026-08-01'
+  http_status: 200

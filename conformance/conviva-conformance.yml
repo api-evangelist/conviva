@@ -1,0 +1,146 @@
+generated: '2026-08-01'
+method: searched
+source: Conviva docs + live probes of the MCP OAuth discovery surface
+sources:
+- https://docs.conviva.ai/connect-data/apis/
+- https://docs.conviva.ai/connect-data/mcp/
+- https://www.conviva.ai/security/
+- https://mcp.conviva.com/.well-known/oauth-authorization-server
+- https://mcp.conviva.com/.well-known/oauth-protected-resource
+description: >-
+  What Conviva actually conforms to across its REST, MCP and event surfaces. The picture is
+  lopsided: the MCP servers are standards-forward (OAuth 2.1 with RFC 8414/9728 discovery, RFC 7591
+  dynamic client registration, PKCE S256, MCP JSON-RPC), while the REST surface at api.conviva.com
+  conforms to almost nothing beyond plain HTTP + RFC 7617 Basic auth — no OpenAPI, no problem
+  details, no rate-limit headers, no deprecation headers.
+
+standards:
+- id: openapi
+  conforms: false
+  evidence: >-
+    No OpenAPI/Swagger document is served on api.conviva.com, docs.conviva.ai or developer.conviva.com
+    (/openapi.json, /openapi.yaml, /swagger.json, /api-docs, /v1/openapi.json all miss). Conviva's own
+    APIs page states the Scalar/OpenAPI references "are being wired up separately" and that the
+    interactive reference "renders a placeholder until specs exist."
+- id: asyncapi
+  conforms: false
+  evidence: No AsyncAPI document published; the alert webhook surface is documented in prose only.
+- id: graphql
+  conforms: false
+  evidence: No /graphql surface found on any Conviva host.
+- id: grpc
+  conforms: false
+  evidence: No published .proto definitions in the Conviva GitHub org or on buf.build.
+- id: mcp
+  conforms: true
+  evidence: >-
+    Two hosted JSON-RPC 2.0 MCP servers over HTTP — mcp.conviva.com (v1.0.0) and dpi-mcp.conviva.com
+    (v1.1.0) — both returning MCP-shaped JSON-RPC errors and exposing Mcp-Session-Id via
+    access-control-expose-headers.
+- id: oauth2
+  conforms: true
+  evidence: >-
+    authorization_code + refresh_token grants on both MCP servers, per
+    /.well-known/oauth-authorization-server.
+- id: oauth2-pkce
+  conforms: true
+  spec: RFC 7636
+  evidence: code_challenge_methods_supported = ["S256"] on both MCP servers.
+- id: rfc8414-authorization-server-metadata
+  conforms: true
+  evidence: /.well-known/oauth-authorization-server returns 200 with issuer, authorization_endpoint,
+    token_endpoint, registration_endpoint and jwks_uri on both MCP hosts.
+- id: rfc9728-protected-resource-metadata
+  conforms: true
+  evidence: /.well-known/oauth-protected-resource returns 200 with resource, authorization_servers,
+    scopes_supported and resource_name on both MCP hosts.
+- id: rfc7591-dynamic-client-registration
+  conforms: true
+  evidence: registration_endpoint advertised at /oauth/register on both MCP hosts; Cursor is documented
+    as registering automatically.
+- id: rfc7517-jwks
+  conforms: true
+  evidence: /.well-known/jwks.json returns 200 with an RSA key set on both MCP hosts.
+- id: oidc-discovery
+  conforms: false
+  evidence: >-
+    openid / profile / email scopes are advertised, but no /.well-known/openid-configuration is served
+    on any Conviva host. OIDC scopes without OIDC discovery.
+- id: rfc7617-http-basic
+  conforms: true
+  evidence: >-
+    REST surface and the mcp.conviva.com autonomous-agent path both use
+    'Authorization: Basic base64(client_id:client_secret)'.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: Errors are plain JSON ({"message":"Unauthorized"}) and prose status tables; no
+    application/problem+json anywhere.
+- id: rfc8594-sunset-header
+  conforms: false
+  evidence: V2 APIs were deprecated 2024-03-31 with no Sunset or Deprecation response headers and no
+    published end-of-life date.
+- id: idempotency-key
+  conforms: false
+  evidence: No idempotency key header or retry-safety contract documented for any write operation.
+- id: rate-limit-headers
+  conforms: false
+  spec: draft-ietf-httpapi-ratelimit-headers
+  evidence: Limits are published in prose; no RateLimit-* or X-RateLimit-* response headers are
+    documented or observed.
+- id: pagination
+  conforms: false
+  evidence: No cursor or offset pagination; result caps (limit, max 500) plus manual time-range
+    splitting.
+- id: iso8601
+  conforms: true
+  evidence: start_date/end_date use ISO 8601 date-times; granularity uses ISO 8601 durations (PT1H,
+    PT1M); MCP metric-query-run requires timezone-offset-bearing ISO 8601 datetimes.
+- id: json-schema
+  conforms: false
+  evidence: No JSON Schema published for API responses or webhook payloads.
+- id: opentelemetry
+  conforms: true
+  evidence: The Conviva Python Agent SDK "sends telemetry to Conviva using the OTLP/HTTP protocol."
+- id: a2a
+  conforms: false
+  evidence: No agent card at /.well-known/agent-card.json or /.well-known/agent.json on any Conviva
+    host (404 on mcp.conviva.com and api.conviva.com; 405 on dpi-mcp.conviva.com).
+- id: statuspage
+  conforms: true
+  evidence: Atlassian Statuspage at status.conviva.com with the standard /api/v2/status.json,
+    /api/v2/summary.json and history.rss endpoints.
+
+compliance_program:
+- id: iso-27001-2022
+  conforms: true
+  scope: Conviva's own certification
+  evidence: '"Conviva is certified under ISO/IEC 27001:2022" — https://www.conviva.ai/security/'
+- id: gdpr
+  conforms: true
+  evidence: Services stated compliant with EU GDPR and UK GDPR; SCCs used for transfers outside the
+    EEA/UK; sub-processor list published.
+- id: ccpa
+  conforms: true
+  evidence: Services stated compliant with the California Consumer Privacy Act; CCPA page and
+    Do-Not-Sell flow published at legal.conviva.ai.
+- id: soc2
+  conforms: false
+  scope: inherited only
+  evidence: SOC 1 / SOC 2 are attributed to Conviva's third-party cloud hosting platforms, not to
+    Conviva. Conviva publishes no SOC 2 report of its own.
+- id: hipaa
+  conforms: false
+  evidence: Not mentioned anywhere on the security or legal surface.
+- id: pci-dss
+  conforms: false
+  evidence: Not mentioned; Conviva does not process cardholder data.
+- id: fedramp
+  conforms: false
+  evidence: Not mentioned.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: No /.well-known/security.txt on conviva.com, conviva.ai, docs.conviva.ai or
+    api.conviva.com.
+
+x-evidence:
+  fetched: '2026-08-01'
