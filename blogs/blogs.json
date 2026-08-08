@@ -2,13 +2,20 @@
   "repo": "conviva",
   "feeds": [
     {
+      "source": "https://www.conviva.ai/feed/",
+      "feed_url": "https://www.conviva.ai/feed/",
+      "title": "",
+      "saved": 0,
+      "method": "feed"
+    },
+    {
       "source": "https://www.conviva.ai/contact/",
       "feed_url": "https://www.conviva.ai/feed/",
       "title": "",
-      "saved": 3,
+      "saved": 0,
       "method": "discovered"
     }
   ],
-  "post_count": 3,
-  "fetched": "2026-08-01T15:49:00Z"
+  "post_count": 10,
+  "fetched": "2026-08-06T14:08:46Z"
 }
