@@ -8,17 +8,13 @@ sources:
 - https://github.com/Conviva/mcp-marketplace
 - https://mcp.conviva.com/mcp
 - https://dpi-mcp.conviva.com/mcp
-
-description: >-
-  Conviva operates TWO hosted, remote-only Model Context Protocol servers. Neither can be run
-  locally. Both are OAuth 2.1 protected resources implementing RFC 8414 + RFC 9728 discovery with
-  dynamic client registration and PKCE (S256); mcp.conviva.com additionally accepts HTTP Basic
-  with a Pulse API key pair for autonomous (non-interactive) agents. A live tools/list on both
-  servers returns JSON-RPC error -32001 "Unauthorized" (HTTP 401), so tool input schemas require
-  an authenticated introspection. The tool names below are NOT guessed — they are taken verbatim
-  from Conviva's own published Agent Skills in github.com/Conviva/mcp-marketplace, mirrored in
-  this repo under skills/.
-
+description: Conviva operates TWO hosted, remote-only Model Context Protocol servers. Neither can be run
+  locally. Both are OAuth 2.1 protected resources implementing RFC 8414 + RFC 9728 discovery with dynamic
+  client registration and PKCE (S256); mcp.conviva.com additionally accepts HTTP Basic with a Pulse API
+  key pair for autonomous (non-interactive) agents. A live tools/list on both servers returns JSON-RPC
+  error -32001 "Unauthorized" (HTTP 401), so tool input schemas require an authenticated introspection.
+  The tool names below are NOT guessed — they are taken verbatim from Conviva's own published Agent Skills
+  in github.com/Conviva/mcp-marketplace, mirrored in this repo under skills/.
 servers:
 - name: conviva-mcp
   transport: http
@@ -39,17 +35,27 @@ servers:
   - path: /dpi/ai-alerts
     server_name: mcp-server-dpi-ai-alerts
   auth:
-    types: [oauth2, http-basic]
+    types:
+    - oauth2
+    - http-basic
     oauth:
       issuer: https://mcp.conviva.com
       authorization_endpoint: https://mcp.conviva.com/oauth/authorize
       token_endpoint: https://mcp.conviva.com/oauth/token
       registration_endpoint: https://mcp.conviva.com/oauth/register
       jwks_uri: https://mcp.conviva.com/.well-known/jwks.json
-      grant_types: [authorization_code, refresh_token]
-      code_challenge_methods: [S256]
-      token_endpoint_auth_methods: [none]
-      scopes: [openid, profile, email, conviva]
+      grant_types:
+      - authorization_code
+      - refresh_token
+      code_challenge_methods:
+      - S256
+      token_endpoint_auth_methods:
+      - none
+      scopes:
+      - openid
+      - profile
+      - email
+      - conviva
     basic:
       header: 'Authorization: Basic base64(client_id:client_secret)'
       credential_source: Pulse API Management page
@@ -58,15 +64,14 @@ servers:
     tools_list: 401 Unauthorized (JSON-RPC -32001)
     service_descriptor: 200 (GET https://mcp.conviva.com/mcp)
     health: 200 (GET https://mcp.conviva.com/health)
-
 - name: conviva-dpi-mcp
   transport: http
   url: https://dpi-mcp.conviva.com/mcp
   version: 1.1.0
   environment: production
   docs: https://github.com/Conviva/mcp-marketplace
-  covers: Context Center knowledge + assets, predefined metric execution, Nexa open-ended analysis,
-    Insights behavior segments, session replay
+  covers: Context Center knowledge + assets, predefined metric execution, Nexa open-ended analysis, Insights
+    behavior segments, session replay
   services:
   - path: /insights
   - path: /nexa
@@ -74,7 +79,8 @@ servers:
   - path: /session-replay
   - path: /metric-query
   auth:
-    types: [oauth2]
+    types:
+    - oauth2
     identity_provider: Okta
     oauth:
       issuer: https://dpi-mcp.conviva.com
@@ -82,16 +88,24 @@ servers:
       token_endpoint: https://dpi-mcp.conviva.com/oauth/token
       registration_endpoint: https://dpi-mcp.conviva.com/oauth/register
       jwks_uri: https://dpi-mcp.conviva.com/.well-known/jwks.json
-      grant_types: [authorization_code, refresh_token]
-      code_challenge_methods: [S256]
-      token_endpoint_auth_methods: [none]
-      scopes: [openid, profile, email, conviva]
+      grant_types:
+      - authorization_code
+      - refresh_token
+      code_challenge_methods:
+      - S256
+      token_endpoint_auth_methods:
+      - none
+      scopes:
+      - openid
+      - profile
+      - email
+      - conviva
   probe:
     tools_list: 401 Unauthorized (JSON-RPC -32001)
-    www_authenticate: 'Bearer realm="mcp", error="invalid_request", error_description="Missing or malformed Authorization header"'
+    www_authenticate: Bearer realm="mcp", error="invalid_request", error_description="Missing or malformed
+      Authorization header"
     service_descriptor: 200 (GET https://dpi-mcp.conviva.com/mcp)
     health: 200 (GET https://dpi-mcp.conviva.com/health)
-
 distribution:
   claude_plugin_marketplace:
     repo: https://github.com/Conviva/mcp-marketplace
@@ -103,25 +117,24 @@ distribution:
     add: /plugin marketplace add Conviva/mcp-marketplace
     install: /plugin install conviva-dpi-mcp@conviva
     requires: Claude Code v2.1.143 or newer
-    bundles_skills: [exploring-context-center, querying-predefined-metrics, retrieving-behavior-segment-details]
-    note: >-
-      "This repository is a published mirror. It is generated from Conviva's internal source of
-      truth on each release — do not edit it directly."
+    bundles_skills:
+    - exploring-context-center
+    - querying-predefined-metrics
+    - retrieving-behavior-segment-details
+    note: '"This repository is a published mirror. It is generated from Conviva''s internal source of
+      truth on each release — do not edit it directly."'
   claude_desktop:
     connector_url: https://dpi-mcp.conviva.com/mcp
-    manual_config: 'npx mcp-remote https://dpi-mcp.conviva.com/mcp (Node.js 18+)'
+    manual_config: npx mcp-remote https://dpi-mcp.conviva.com/mcp (Node.js 18+)
   cursor:
-    config: '~/.cursor/mcp.json -> {"mcpServers":{"conviva":{"url":"https://dpi-mcp.conviva.com/mcp"}}}'
+    config: ~/.cursor/mcp.json -> {"mcpServers":{"conviva":{"url":"https://dpi-mcp.conviva.com/mcp"}}}
     note: Cursor gets the tools only; the companion skills are Claude-plugin-only.
-
-# Tool names published by Conviva in its own Agent Skills (skills/). inputSchema for each tool is
-# NOT reproduced here because tools/list is auth-gated — nothing about parameters is invented.
 tools:
 - name: identity-c3-account-list
   server: conviva-dpi-mcp
   category: identity
-  description: List the c3 accounts the caller is authorized for. Account-scoped tools require an
-    explicit c3AccountName; there is no safe default.
+  description: List the c3 accounts the caller is authorized for. Account-scoped tools require an explicit
+    c3AccountName; there is no safe default.
   input_schema: gated
 - name: context-center-nexa-semantic-search
   server: conviva-dpi-mcp
@@ -146,15 +159,15 @@ tools:
   server: conviva-dpi-mcp
   service: /context-center
   category: definition
-  description: Hydrate the authoritative structured definition of one Context Center asset by
-    assetType + assetId (pattern, metric, critical-event, dimension, segment, template).
+  description: Hydrate the authoritative structured definition of one Context Center asset by assetType
+    + assetId (pattern, metric, critical-event, dimension, segment, template).
   input_schema: gated
 - name: context-center-asset-list
   server: conviva-dpi-mcp
   service: /context-center
   category: definition
-  description: Page through all assets of an assetType, returning { items, pagination }. The search
-    argument filters one already-fetched page, not the whole result set.
+  description: Page through all assets of an assetType, returning { items, pagination }. The search argument
+    filters one already-fetched page, not the whole result set.
   input_schema: gated
 - name: metric-query-run
   server: conviva-dpi-mcp
@@ -167,9 +180,9 @@ tools:
   server: conviva-dpi-mcp
   service: /nexa
   category: analysis
-  description: Async open-ended analysis fallback for questions no predefined metric answers. Requires a
-    fallbackReason (no_matching_metric, unsupported_breakdown, open_ended_analysis,
-    multi_metric_or_comparison, metric_query_failed, other).
+  description: Async open-ended analysis fallback for questions no predefined metric answers. Requires
+    a fallbackReason (no_matching_metric, unsupported_breakdown, open_ended_analysis, multi_metric_or_comparison,
+    metric_query_failed, other).
   input_schema: gated
 - name: nexa-analyze-result
   server: conviva-dpi-mcp
@@ -190,26 +203,28 @@ tools:
   description: Retrieve the stored details of one Insights behavior segment — its pre-computed insights,
     evidence and conversion barriers. A static lookup, not a live analytical query.
   input_schema: gated
-
-tool_coverage_note: >-
-  These 11 tools are the ones Conviva names in its published skills, all on the dpi-mcp server.
-  The mcp.conviva.com server's five sub-services (/vsi/metrics, /vsi/ai-alerts, /vsi/sessions,
-  /dpi/metrics, /dpi/ai-alerts) are confirmed live and named, but their individual tool names are
-  not published anywhere anonymous — they require an authenticated tools/list. Recorded as unknown
-  rather than guessed.
-
+tool_coverage_note: These 11 tools are the ones Conviva names in its published skills, all on the dpi-mcp
+  server. The mcp.conviva.com server's five sub-services (/vsi/metrics, /vsi/ai-alerts, /vsi/sessions,
+  /dpi/metrics, /dpi/ai-alerts) are confirmed live and named, but their individual tool names are not
+  published anywhere anonymous — they require an authenticated tools/list. Recorded as unknown rather
+  than guessed.
 known_limits:
-  session_replay: Service /session-replay is advertised in the dpi-mcp descriptor but no tool for it
-    appears in the published skills.
+  session_replay: Service /session-replay is advertised in the dpi-mcp descriptor but no tool for it appears
+    in the published skills.
   nexa_local_dev: nexa-analyze / nexa-analyze-result return 503 without a Redis job store.
-
 changelog:
 - date: '2026-03-03'
   entry: MCP access unified into a single endpoint.
-- date: '2025-10'
+- date: 2025-10
   entry: Agent-based MCP requests added.
-
 x-evidence:
   fetched: '2026-08-01'
   tools_list_http_status: 401
   descriptor_http_status: 200
+deployment:
+  mode: remote
+  endpoint: https://mcp.conviva.com/mcp
+  verified: probed
+  probe: gated
+  checked: '2026-08-12'
+  source: catalog MCP census
