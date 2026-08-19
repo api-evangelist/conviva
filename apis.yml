@@ -16,7 +16,7 @@ url: https://raw.githubusercontent.com/api-evangelist/conviva/refs/heads/main/ap
 image: https://www.conviva.ai/wp-content/uploads/2025/10/conviva-logo.svg
 x-type: company
 x-source: harvest:secondary-market
-specificationVersion: '0.20'
+specificationVersion: '0.23'
 created: '2026-08-01'
 modified: '2026-08-01'
 tags:
