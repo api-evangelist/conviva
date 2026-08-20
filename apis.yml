@@ -27,6 +27,19 @@ tags:
 - Monitoring
 - Media
 - Quality of Experience
+- Real-Time
+- Telemetry
+- Agents
+- MCP
+- Company
+tags_raw:
+- Analytics
+- Streaming
+- Video
+- Observability
+- Monitoring
+- Media
+- Quality of Experience
 - Real Time
 - Telemetry
 - Agents
@@ -72,6 +85,10 @@ apis:
   humanURL: https://docs.conviva.ai/api/apis/conviva-vsi-api/ai-alerts-api-guide/
   baseURL: https://api.conviva.com/insights/2.6/ai-alerts
   tags:
+  - Alerts
+  - Monitoring
+  - Artificial Intelligence
+  tags_raw:
   - Alerts
   - Monitoring
   - AI
