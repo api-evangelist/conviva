@@ -13,6 +13,17 @@ description: 'Conviva is the streaming-media and digital-experience analytics co
   Agent Skills for its DPI MCP server. Authentication across the REST surface is HTTP Basic with a
   client-id/client-secret API key pair generated in Pulse API Management.'
 url: https://raw.githubusercontent.com/api-evangelist/conviva/refs/heads/main/apis.yml
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://www.conviva.ai/wp-content/uploads/2025/10/conviva-logo.svg
 x-type: company
 x-source: harvest:secondary-market
