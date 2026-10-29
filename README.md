@@ -64,48 +64,130 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Conviva is the streaming-media and digital-experience analytics company behind Experience-Centric
-Operations (ECO) — a real-time, full-census operational data platform that stitches client-side
-telemetry from its Sensor SDKs into stateful, per-viewer experience analytics for video streamers,
-broadcasters and app publishers.
+Conviva is the streaming-media and digital-experience analytics company behind Experience-Centric Operations (ECO) — a real-time, full-census operational data platform that stitches client-side telemetry from its Sensor SDKs into stateful, per-viewer experience analytics for video streamers, broadcasters and app publishers. Its Pulse portal is fronted by a public REST surface at api.conviva.com covering Metrics V3, Sessions V3, AI Alerts, Bulk Filters, Precision Policy, PII Opt-Out and Validation Timeline, plus Conviva Connect session-summary data feeds (S3/GCS/Snowflake/BigQuery/SFTP), alert webhooks, and two hosted OAuth-protected Model Context Protocol servers (mcp.conviva.com for VSI/DPI metrics, alerts and sessions; dpi-mcp.conviva.com for Context Center, Nexa analysis, metric query and session replay). Conviva publishes a large first-party SDK estate — JavaScript/npm, Android/Maven, iOS/CocoaPods+SPM, React Native, Node and Python agent SDKs — and a Claude plugin marketplace carrying three provider-authored Agent Skills for its DPI MCP server. Authentication across the REST surface is HTTP Basic with a client-id/client-secret API key pair generated in Pulse API Management.
 
-- Website: https://www.conviva.ai/
-- Docs: https://docs.conviva.ai/
-- APIs: https://docs.conviva.ai/connect-data/apis/
-- GitHub: https://github.com/Conviva
-- Status: https://status.conviva.com/
+**Areas:** Analytics · Streaming · Video · Observability · Monitoring · Media · Quality of Experience · Real-Time · Telemetry · Agents · MCP · Company
 
-## API surface
+## Conviva on APIs.io
 
-| API | Base URL | Auth |
-|---|---|---|
-| Metrics V3 | `https://api.conviva.com/insights/3.0/metrics` | HTTP Basic (API key pair) |
-| Real-Time Metrics V3 | `https://api.conviva.com/insights/3.0/real-time-metrics` | HTTP Basic |
-| Sessions V3 | `https://api.conviva.com/insights/3.0/sessions` | HTTP Basic |
-| AI Alerts | `https://api.conviva.com/insights/2.6/ai-alerts` | HTTP Basic |
-| Bulk Filters | `https://api.conviva.com/bulk_filters` | HTTP Basic |
-| Precision Policy | `https://api.conviva.com/precision/v1.0/policies` | HTTP Basic + Precision Admin |
-| PII Opt-Out | `https://api.conviva.com/pii-opt-out` | HTTP Basic |
-| Validation Timeline v2 | `https://api.conviva.com/validation/v2/timeline` | HTTP Basic |
-| MCP Server | `https://mcp.conviva.com/mcp` | OAuth 2.1 / HTTP Basic |
-| DPI MCP Server | `https://dpi-mcp.conviva.com/mcp` | OAuth 2.1 (Okta) |
+Everything profiled for Conviva is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/conviva/](https://apis.io/providers/conviva/)** — or go straight to one of the APIs or properties below.
 
-## Notable
+### APIs (9)
 
-- **Two hosted MCP servers**, both OAuth 2.1 protected resources with RFC 8414 + RFC 9728 discovery,
-  RFC 7591 dynamic client registration and PKCE S256. `tools/list` is auth-gated on both.
-- **Provider-published Agent Skills.** Conviva ships three of its own Agent Skills through a Claude
-  plugin marketplace at `github.com/Conviva/mcp-marketplace`; they are mirrored verbatim in
-  `skills/`. This is a genuinely rare artifact — most providers publish none.
-- **No OpenAPI.** Conviva's own APIs page states the Scalar reference "renders a placeholder until
-  specs exist." Every standard spec path was probed on every host and missed.
-- **The agent surface is read-only by construction.** Every write Conviva exposes over REST
-  (filters, Precision policy, PII opt-out) is absent from its MCP servers.
-- **ISO/IEC 27001:2022 certified.** SOC 1/SOC 2 are inherited from hosting providers, not Conviva's
-  own audits.
+- [Conviva Metrics V3 API](https://apis.io/apis/conviva/metrics-v3/) — Programmatic access to historical and real-time Conviva experience metrics by metric name, with optional group-by dimensions, saved or dimensional filters,…
+- [Conviva Sessions V3 API](https://apis.io/apis/conviva/sessions-v3/) — Session-level detail for content and ad sessions, including per-viewer session diagnostics, network_info with IPv4/IPv6, and summary metrics. Endpoints…
+- [Conviva AI Alerts API](https://apis.io/apis/conviva/ai-alerts/) — Retrieval of AI-driven content and ad alerts, alert diagnostics and impacted-session detail, filterable by time range and severity. Endpoints are…
+- [Conviva Bulk Filters API](https://apis.io/apis/conviva/bulk-filters/) — Bulk create, retrieve, update and delete of saved Conviva filters so large filter sets can be managed programmatically. Each call processes a maximum of 100…
+- [Conviva Precision Policy API](https://apis.io/apis/conviva/precision-policy/) — Programmatic control over Conviva Precision policies — retrieve policy definitions and their filters and resource shares, activate policies, and reorder…
+- [Conviva PII Opt-Out API](https://apis.io/apis/conviva/pii-opt-out/) — Privacy-request surface for marking viewer identifiers for opt-out and deletion of Personally Identifiable Information, plus retrieval of opt-out request…
+- [Conviva Validation Timeline API v2](https://apis.io/apis/conviva/validation-timeline-v2/) — Session validation timeline data for QA and sensor-integration testing, queried by viewer_id and/or session_id, used to verify that a Conviva Sensor…
+- [Conviva MCP Server](https://apis.io/apis/conviva/mcp/) — Hosted Model Context Protocol server exposing Conviva VSI and DPI data to agents across five sub-services — /vsi/metrics, /vsi/ai-alerts, /vsi/sessions,…
+- [Conviva DPI MCP Server](https://apis.io/apis/conviva/dpi-mcp/) — Hosted Model Context Protocol server for the Conviva Digital Intelligence Platform, exposing /insights, /nexa, /context-center, /session-replay and…
 
-## Artifacts
+### Published properties
 
-`apis.yml` · `asyncapi/` (webhooks) · `authentication/` · `changelog/` · `conformance/` ·
-`conventions/` · `errors/` · `lifecycle/` · `llms/` · `mcp/` (server + tool crosswalk) ·
-`packages/` · `rate-limits/` · `scopes/` · `security/` · `skills/` · `well-known/`
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### AsyncAPI (1)
+
+Event-driven and webhook contracts.
+
+- [Conviva Alerts Webhooks](https://apis.io/asyncapis/conviva/conviva-alerts-webhooks/)
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [conviva-mcp.yml](https://apis.io/servers/conviva/conviva-mcp-yml/)
+
+#### Security (3)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Conviva Authentication](https://apis.io/security/conviva/conviva-authentication/)
+- [Conviva Domain Security](https://apis.io/security/conviva/conviva-domain-security/)
+- [Conviva Trust Center](https://apis.io/security/conviva/conviva-trust-center/)
+
+#### OAuth scopes (1)
+
+The permissions the API asks for.
+
+- [Conviva Scopes](https://apis.io/scopes/conviva/conviva-scopes/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Conviva Rate Limits](https://apis.io/rate-limits/conviva/conviva-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.conviva.ai/)
+- [Documentation](https://docs.conviva.ai/)
+- [Getting started](https://docs.conviva.ai/api/apis/conviva-vsi-api/metrics-v3-api-guide/)
+- [API reference](https://docs.conviva.ai/connect-data/apis/)
+- [Sign up](https://www.conviva.ai/get-started)
+- [Support](https://www.conviva.ai/contact/)
+- [Blog](https://www.conviva.ai/blog/)
+- [Compliance](https://www.conviva.ai/security/)
+- [Terms of service](https://legal.conviva.ai/terms-of-use/)
+- [Privacy policy](https://legal.conviva.ai/privacy-policy/)
+- [GitHub](https://github.com/Conviva)
+- [Status](https://status.conviva.com/)
+
+## API Evangelist rating
+
+**Kin Score 58.4** — strong · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 80.0 |
+| Contract quality | 39.0 |
+| Contract governance | 18.2 |
+| Operational transparency | 81.6 |
+| Developer ergonomics | 71.4 |
+| Access clarity | 50.0 |
+
+**Agent readiness 53.6** — agent-ready (gated down from agent-native)
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | verified |
+| Auth Clarity | served (partial credit) |
+| Idempotency | — |
+| Error Semantics | documented (partial credit) |
+| OpenAPI Examples | — |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | yes |
+| Agent Skills | yes |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | served (partial credit) |
+| Protected Resource Metadata | verified |
+| Dynamic Client Registration | yes |
+| Agentic Commerce | — |
+| Pagination Ratio | na |
+| Operation Distinctiveness | na |
+
+**Regulatory alignment 39.2** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/conviva/](https://apis.io/providers/conviva/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for Conviva: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/conviva/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
